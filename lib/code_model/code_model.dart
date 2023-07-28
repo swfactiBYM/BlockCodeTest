@@ -65,4 +65,8 @@ $subC
 class FunctionCodeModel extends CodeModel {
   String name;
   FunctionCodeModel(this.name) : super(name);
+
+  String getCode() {
+    return "name();";
+  }
 }
