@@ -17,12 +17,12 @@ class IfCodeModel extends CodeModel {
   final List<CodeModel> _elseCode = [];
 
   void addIfCode(CodeModel code) => _ifCode.add(code);
-
-  void removeIfCode(int indx) => _ifCode.removeAt(indx);
+  void removeIfCodeI(int indx) => _ifCode.removeAt(indx);
+  void removeIfCode(CodeModel code) => _ifCode.remove(code);
 
   void addElseCode(CodeModel code) => _elseCode.add(code);
-
-  void removeElseCode(int indx) => _elseCode.removeAt(indx);
+  void removeElseCodeI(int indx) => _elseCode.removeAt(indx);
+  void removeElseCode(CodeModel code) => _elseCode.remove(code);
 
   @override
   String getCode() {
@@ -50,7 +50,8 @@ class ForCodeModel extends CodeModel {
   ForCodeModel(this.iterCount) : super("for");
 
   void addSubCode(CodeModel code) => _subCode.add(code);
-  void removeSubCode(int indx) => _subCode.removeAt(indx);
+  void removeSubCodeI(int indx) => _subCode.removeAt(indx);
+  void removeSubCode(CodeModel code) => _subCode.remove(code);
 
   @override
   String getCode() {
@@ -64,9 +65,24 @@ $subC
 
 class FunctionCodeModel extends CodeModel {
   String name;
+  final List<CodeModel> _subCode = [];
+
   FunctionCodeModel(this.name) : super(name);
 
+  void addSubCode(CodeModel code) => _subCode.add(code);
+  void removeSubCodeI(int indx) => _subCode.removeAt(indx);
+  void removeSubCode(CodeModel code) => _subCode.remove(code);
+
+  @override
   String getCode() {
-    return "name();";
+    return "$name();";
+  }
+
+  String getDefCode() {
+    final subC =
+        _subCode.fold('', (prev, elem) => '$prev\t${elem.getCode()}\n');
+    return '''void $name(){
+$subC
+}''';
   }
 }
