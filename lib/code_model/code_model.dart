@@ -9,20 +9,24 @@ class CodeModel {
 }
 
 class IfCodeModel extends CodeModel {
-  String condition;
+  String? condition;
 
-  IfCodeModel(this.condition) : super("if");
+  IfCodeModel() : super("if");
 
   final List<CodeModel> _ifCode = [];
   final List<CodeModel> _elseCode = [];
 
+  List<CodeModel> get ifCode => _ifCode;
   void addIfCode(CodeModel code) => _ifCode.add(code);
   void removeIfCodeI(int indx) => _ifCode.removeAt(indx);
   void removeIfCode(CodeModel code) => _ifCode.remove(code);
 
+  List<CodeModel> get elseCode => _elseCode;
   void addElseCode(CodeModel code) => _elseCode.add(code);
   void removeElseCodeI(int indx) => _elseCode.removeAt(indx);
   void removeElseCode(CodeModel code) => _elseCode.remove(code);
+
+  void setCondition(String cond) => condition = cond;
 
   @override
   String getCode() {
