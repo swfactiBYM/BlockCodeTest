@@ -1,7 +1,9 @@
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ui_test/code_model/code_control.dart';
 import 'package:ui_test/code_widget/code_widget_builder.dart';
+import 'package:ui_test/flame/the_game.dart';
 
 import 'code_model/code_model.dart';
 
@@ -68,10 +70,31 @@ class TheApp extends StatelessWidget {
             ],
           ),
         ),
-        Container(
-          width: context.width / 2,
-          color: Colors.red,
-        ),
+        Expanded(
+          child: GameWidget.controlled(
+            gameFactory: TheGame.new,
+            overlayBuilderMap: <String, Widget Function(BuildContext, Game)>{
+              'startButton': (context, game) => Positioned(
+                    top: context.height * 0.75,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        (game as TheGame).startGame();
+                      },
+                      child: Text('START'),
+                    ),
+                  ),
+              'resetButton': (context, game) => Positioned(
+                    top: context.height * 0.8,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        (game as TheGame).resetgame();
+                      },
+                      child: Text('Reset'),
+                    ),
+                  ),
+            },
+          ),
+        )
       ]),
     );
   }
