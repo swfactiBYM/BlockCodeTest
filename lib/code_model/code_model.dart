@@ -1,7 +1,23 @@
+import 'package:flutter/material.dart';
+import 'package:get/instance_manager.dart';
+import 'package:ui_test/code_model/code_control.dart';
+
+final codeController = Get.find<CodeController>();
+
 class CodeModel {
   String code;
 
   CodeModel(this.code);
+
+  Widget getWidget() {
+    return GestureDetector(
+        onTap: () {
+          codeController.select(this);
+        },
+        child: Container(
+            color: codeController.selected == this ? Colors.grey : Colors.white,
+            child: Text(code)));
+  }
 
   String getCode() {
     return code;
@@ -9,9 +25,11 @@ class CodeModel {
 }
 
 class IfCodeModel extends CodeModel {
-  String condition;
+  String? condition;
+  List<CodeModel> action = [];
+  bool selected = false;
 
-  IfCodeModel(this.condition) : super("if");
+  IfCodeModel() : super("if");
 
   final List<CodeModel> _ifCode = [];
   final List<CodeModel> _elseCode = [];
@@ -23,6 +41,45 @@ class IfCodeModel extends CodeModel {
   void addElseCode(CodeModel code) => _elseCode.add(code);
 
   void removeElseCode(int indx) => _elseCode.removeAt(indx);
+
+  @override
+  Widget getWidget() {
+    return GestureDetector(
+      onTap: () {
+        codeController.select(this);
+      },
+      child: Container(
+        color: codeController.selected == this ? Colors.grey : Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text('''if '''),
+                ElevatedButton(
+                    onPressed: () {
+                      codeController.setMode(MODE.ifCondition);
+                      codeController.select(this);
+                    },
+                    child: condition == null
+                        ? const Text('condition')
+                        : Text(condition!)),
+                const Text(' {')
+              ],
+            ),
+            ElevatedButton(
+              onPressed: () {
+                codeController.setMode(MODE.ifAction);
+                codeController.select(this);
+              },
+              child: const Text('action'),
+            ),
+            const Text('}')
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   String getCode() {
@@ -66,6 +123,7 @@ class FunctionCodeModel extends CodeModel {
   String name;
   FunctionCodeModel(this.name) : super(name);
 
+  @override
   String getCode() {
     return "name();";
   }
