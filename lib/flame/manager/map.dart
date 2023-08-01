@@ -3,17 +3,19 @@ import 'package:ui_test/flame/the_game.dart';
 
 class MapManager extends Component with HasGameRef<TheGame> {
   List<String> map = [
-    "01011",
-    "00001",
-    "12001",
-    "10001",
-    "10020",
+    "1111111",
+    "1000001",
+    "1200021",
+    "1000001",
+    "1000001",
+    "1020001",
+    "1111111"
   ];
   int get width => map[0].length;
   int get height => map.length;
   Vector2 get size => Vector2(width.toDouble(), height.toDouble());
-  Vector2 initialPlayerPosition = Vector2(0, 0);
-  Vector2 destination = Vector2(4, 4);
+  Vector2 initialPlayerPosition = Vector2(1, 1);
+  Vector2 destination = Vector2(2, 1);
 
   static const int scaleFactor = 3;
 

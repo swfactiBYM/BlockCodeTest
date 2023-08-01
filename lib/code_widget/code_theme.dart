@@ -18,3 +18,17 @@ const buttonTextTheme = TextStyle(
   fontWeight: FontWeight.normal,
   fontSize: 15,
 );
+
+final textInputTheme = InputDecoration(
+  isDense: true,
+  contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(4),
+    borderSide: const BorderSide(color: Color(0xffC7C3C3), width: 1),
+  ),
+  focusColor: Colors.black45,
+  focusedBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(4),
+    borderSide: const BorderSide(color: Color(0xffC7C3C3), width: 1),
+  ),
+);

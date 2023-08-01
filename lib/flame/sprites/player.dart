@@ -67,9 +67,9 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
       gameRef.map.map[relPos.y.round()][relPos.x.round()] == '1';
 
   bool get isOutOfBounds =>
-      relPos.y < 0 ||
+      relPos.y <= -0.5 ||
       relPos.y >= gameRef.map.height - 0.5 ||
-      relPos.x < 0 ||
+      relPos.x <= -0.5 ||
       relPos.x >= gameRef.map.width - 0.5;
 
   @override
@@ -234,6 +234,10 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
   }
 
   bool hasItem() => inventory > 0;
+
+  bool isOnItem() =>
+      !isOutOfBounds &&
+      gameRef.map.map[relPos.y.round()][relPos.x.round()] == '2';
 
   bool isInDestination() => relPos == gameRef.map.destination;
 

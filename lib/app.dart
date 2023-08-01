@@ -3,17 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ui_test/code_model/code_control.dart';
 import 'package:ui_test/code_widget/code_widget_builder.dart';
+import 'package:ui_test/flame/game_controller.dart';
 import 'package:ui_test/flame/the_game.dart';
 
 import 'code_model/code_model.dart';
 
 class TheApp extends StatelessWidget {
   final codeController = Get.put(CodeController());
+  final game = TheGame();
+  late final GameController gameController;
 
   TheApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    gameController = Get.put(GameController(game));
     return Scaffold(
       body: Row(children: [
         Expanded(
@@ -30,41 +34,11 @@ class TheApp extends StatelessWidget {
                       },
                     )),
               ),
-              DecoratedBox(
-                  decoration: const BoxDecoration(color: Color(0xffF0F0F0)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Select a Code",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          IconButton(
-                              onPressed: () {
-                                codeController.removeRequest();
-                              },
-                              icon: Icon(Icons.delete))
-                        ]),
-                  )),
               Flexible(
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  children: [
-                    ListTile(
-                      title: Text('move'),
-                      onTap: () {
-                        codeController.addCode(CodeModel("move();"));
-                      },
-                    ),
-                    ListTile(
-                      title: Text("if"),
-                      onTap: () {
-                        codeController.addCode(IfCodeModel());
-                      },
-                    ),
-                  ],
+                child: Obx(
+                  () => codeController.extra.value != 1
+                      ? normalFunctions()
+                      : contitionFunctions(),
                 ),
               )
             ],
@@ -72,13 +46,13 @@ class TheApp extends StatelessWidget {
         ),
         Expanded(
           child: GameWidget.controlled(
-            gameFactory: TheGame.new,
+            gameFactory: () => game,
             overlayBuilderMap: <String, Widget Function(BuildContext, Game)>{
               'startButton': (context, game) => Positioned(
                     top: context.height * 0.75,
                     child: ElevatedButton(
                       onPressed: () {
-                        (game as TheGame).startGame();
+                        gameController.startGame();
                       },
                       child: Text('START'),
                     ),
@@ -87,15 +61,182 @@ class TheApp extends StatelessWidget {
                     top: context.height * 0.8,
                     child: ElevatedButton(
                       onPressed: () {
-                        (game as TheGame).resetgame();
+                        gameController.resetGame();
                       },
                       child: Text('Reset'),
                     ),
+                  ),
+              'backdrop': (context, game) => Positioned.fill(
+                    child: Container(),
                   ),
             },
           ),
         )
       ]),
+    );
+  }
+
+  Widget normalFunctions() {
+    return Column(
+      children: [
+        DecoratedBox(
+            decoration: const BoxDecoration(color: Color(0xffF0F0F0)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Select a Code",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          codeController.removeRequest();
+                        },
+                        icon: Icon(Icons.delete))
+                  ]),
+            )),
+        Flexible(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            children: [
+              ListTile(
+                title: Text('move()'),
+                onTap: () {
+                  codeController.addCode(CodeModel(
+                    "move();",
+                    callback: () async {
+                      game.player.move();
+                      await Future.delayed(const Duration(milliseconds: 500));
+                    },
+                  ));
+                },
+              ),
+              ListTile(
+                title: Text('pickUpClam()'),
+                onTap: () {
+                  codeController.addCode(CodeModel(
+                    "pickUpClam();",
+                    callback: () async {
+                      game.player.pickUpItem();
+                      await Future.delayed(const Duration(milliseconds: 500));
+                    },
+                  ));
+                },
+              ),
+              ListTile(
+                title: Text('putDownClam()'),
+                onTap: () {
+                  codeController.addCode(CodeModel(
+                    "putDownClam();",
+                    callback: () async {
+                      game.player.putDownItem();
+                      await Future.delayed(const Duration(milliseconds: 500));
+                    },
+                  ));
+                },
+              ),
+              ListTile(
+                title: Text('turnRight()'),
+                onTap: () {
+                  codeController.addCode(CodeModel(
+                    "turnRight();",
+                    callback: () async {
+                      game.player.turnRight();
+                      await Future.delayed(const Duration(milliseconds: 500));
+                    },
+                  ));
+                },
+              ),
+              ListTile(
+                title: Text('turnLeft()'),
+                onTap: () {
+                  codeController.addCode(CodeModel(
+                    "turnLeft();",
+                    callback: () async {
+                      game.player.turnLeft();
+                      await Future.delayed(const Duration(milliseconds: 500));
+                    },
+                  ));
+                },
+              ),
+              ListTile(
+                title: Text("if"),
+                onTap: () {
+                  codeController.addCode(IfCodeModel());
+                },
+              ),
+              ListTile(
+                title: Text("for"),
+                onTap: () {
+                  codeController.addCode(ForCodeModel(0));
+                },
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget contitionFunctions() {
+    return Column(
+      children: [
+        DecoratedBox(
+            decoration: const BoxDecoration(color: Color(0xffF0F0F0)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              codeController.extra.value = 0;
+                              codeController.clearSelectedCode();
+                            },
+                            icon: Icon(Icons.arrow_back)),
+                        const Text(
+                          "Select a Condition",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          codeController.removeRequest();
+                        },
+                        icon: Icon(Icons.delete))
+                  ]),
+            )),
+        Flexible(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            children: [
+              ListTile(
+                title: Text('isOnClam()'),
+                onTap: () {
+                  (codeController.selectedCode.value as IfCodeModel).check =
+                      () => game.player.isOnItem();
+                  codeController.setCondition('isOnClam()');
+                  codeController.clearSelectedCode();
+                },
+              ),
+              ListTile(
+                title: Text("hasClam()"),
+                onTap: () {
+                  (codeController.selectedCode.value as IfCodeModel).check =
+                      () => game.player.hasItem();
+                  codeController.setCondition('hasClam()');
+                  codeController.clearSelectedCode();
+                },
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 }

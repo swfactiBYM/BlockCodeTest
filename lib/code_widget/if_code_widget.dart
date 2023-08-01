@@ -14,57 +14,56 @@ class IfCodeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Obx(
-          () => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text("if ("),
-                  codeRx.value.condition == null
-                      ? conditionButton()
-                      : Text(codeRx.value.condition!),
-                  Text(") {"),
-                ],
-              ),
-              Row(
-                children: [
-                  const SizedBox(width: 10),
-                  Column(
-                    children: [
-                      for (final code in codeRx.value.ifCode)
-                        CodeWidgetBuilder.codeWidget(code),
-                      ifCodeButton(),
-                    ],
-                  )
-                ],
-              ),
-              Text("}"),
-              if (codeRx.value.elseCode.isNotEmpty) ...[
-                Text("else {"),
+        GestureDetector(
+          onTap: () => Get.find<CodeController>()
+              .setSelectedCode(codeRx.value, extra: 0),
+          child: Obx(
+            () => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
                   children: [
-                    const SizedBox(
-                      width: 10,
-                    ),
+                    Text("if ("),
+                    codeRx.value.condition == null
+                        ? conditionButton()
+                        : Text(codeRx.value.condition!),
+                    Text(") {"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const SizedBox(width: 10),
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        for (final code in codeRx.value.elseCode)
+                        for (final code in codeRx.value.ifCode)
                           CodeWidgetBuilder.codeWidget(code),
-                        elseCodeButton(),
+                        ifCodeButton(),
                       ],
                     )
                   ],
                 ),
-                Text("}")
-              ]
-            ],
-          ),
-        ),
-        Positioned.fill(
-          child: GestureDetector(
-            onTap: () => Get.find<CodeController>()
-                .setSelectedCode(codeRx.value, extra: 0),
+                Text("}"),
+                if (codeRx.value.elseCode.isNotEmpty) ...[
+                  Text("else {"),
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Column(
+                        children: [
+                          for (final code in codeRx.value.elseCode)
+                            CodeWidgetBuilder.codeWidget(code),
+                          elseCodeButton(),
+                        ],
+                      )
+                    ],
+                  ),
+                  Text("}")
+                ]
+              ],
+            ),
           ),
         ),
       ],
@@ -73,14 +72,14 @@ class IfCodeWidget extends StatelessWidget {
 
   Widget conditionButton() {
     return ElevatedButton(
-      child: const Text(
-        'condition',
-        style: buttonTextTheme,
-      ),
       onPressed: () {
         Get.find<CodeController>().setSelectedCode(codeRx.value, extra: 1);
       },
       style: buttonTheme,
+      child: const Text(
+        'condition',
+        style: buttonTextTheme,
+      ),
     );
   }
 
