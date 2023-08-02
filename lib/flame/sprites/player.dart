@@ -130,20 +130,20 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     }
 
     if (relPos != destPos && !isOutOfBounds && !isInWall) {
-      if (relPos.x > destPos.x) {
-        relPos.x -= 0.03125;
-      } else if (relPos.x < destPos.x) {
-        relPos.x += 0.03125;
-      } else if ((relPos.x - destPos.x).abs() < 0.1) {
+      if ((relPos.x - destPos.x).abs() < 0.01) {
         relPos.x = destPos.x;
+      } else if (relPos.x > destPos.x) {
+        relPos.x -= 2 * dt;
+      } else if (relPos.x < destPos.x) {
+        relPos.x += 2 * dt;
       }
 
-      if (relPos.y > destPos.y) {
-        relPos.y -= 0.03125;
-      } else if (relPos.y < destPos.y) {
-        relPos.y += 0.03125;
-      } else if ((relPos.y - destPos.y).abs() < 0.1) {
+      if ((relPos.y - destPos.y).abs() < 0.01) {
         relPos.y = destPos.y;
+      } else if (relPos.y > destPos.y) {
+        relPos.y -= 2 * dt;
+      } else if (relPos.y < destPos.y) {
+        relPos.y += 2 * dt;
       }
     }
 
