@@ -29,4 +29,25 @@ class MapManager extends Component with HasGameRef<TheGame> {
     final r = map[y].substring(x + 1);
     map[y] = l + element.toString() + r;
   }
+
+  bool checkSuccess({List<String>? mapState, int? inventoryCount}) {
+    var mapSuccess = true;
+    var invSuccess = true;
+    final destSuccess = gameRef.player.isInDestination();
+
+    if (mapState != null) {
+      for (int i = 0; i < mapState.length; i++) {
+        if (mapState[i] != map[i]) {
+          mapSuccess = false;
+          break;
+        }
+      }
+    }
+    if (inventoryCount != null) {
+      invSuccess = gameRef.player.inventory == inventoryCount;
+    }
+
+    print('$mapSuccess $invSuccess $destSuccess');
+    return mapSuccess && invSuccess && destSuccess;
+  }
 }

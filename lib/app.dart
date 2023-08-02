@@ -63,9 +63,6 @@ class TheApp extends StatelessWidget {
                       child: Text('Reset'),
                     ),
                   ),
-              'backdrop': (context, game) => Positioned.fill(
-                    child: Container(),
-                  ),
             },
           ),
         )

@@ -239,7 +239,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
       !isOutOfBounds &&
       gameRef.map.map[relPos.y.round()][relPos.x.round()] == '2';
 
-  bool isInDestination() => relPos == gameRef.map.destination;
+  bool isInDestination() => destPos == gameRef.map.destination;
 
   void reset() {
     inventory = 0;
