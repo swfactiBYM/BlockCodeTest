@@ -9,7 +9,7 @@ class MapManager extends Component with HasGameRef<TheGame> {
     "1000001",
     "1000001",
     "1020001",
-    "1111111"
+    "1111111",
   ];
   int get width => map[0].length;
   int get height => map.length;

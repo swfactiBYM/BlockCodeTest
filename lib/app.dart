@@ -10,14 +10,11 @@ import 'code_model/code_model.dart';
 
 class TheApp extends StatelessWidget {
   final codeController = Get.put(CodeController());
-  final game = TheGame();
-  late final GameController gameController;
+  final gameController = Get.put(GameController(TheGame()));
 
   TheApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    gameController = Get.put(GameController(game));
     return Scaffold(
       body: Row(children: [
         Expanded(
@@ -46,7 +43,7 @@ class TheApp extends StatelessWidget {
         ),
         Expanded(
           child: GameWidget.controlled(
-            gameFactory: () => game,
+            gameFactory: () => gameController.game,
             overlayBuilderMap: <String, Widget Function(BuildContext, Game)>{
               'startButton': (context, game) => Positioned(
                     top: context.height * 0.75,
@@ -107,7 +104,7 @@ class TheApp extends StatelessWidget {
                   codeController.addCode(CodeModel(
                     "move();",
                     callback: () async {
-                      game.player.move();
+                      gameController.game.player.move();
                       await Future.delayed(const Duration(milliseconds: 500));
                     },
                   ));
@@ -119,7 +116,7 @@ class TheApp extends StatelessWidget {
                   codeController.addCode(CodeModel(
                     "pickUpClam();",
                     callback: () async {
-                      game.player.pickUpItem();
+                      gameController.game.player.pickUpItem();
                       await Future.delayed(const Duration(milliseconds: 500));
                     },
                   ));
@@ -131,7 +128,7 @@ class TheApp extends StatelessWidget {
                   codeController.addCode(CodeModel(
                     "putDownClam();",
                     callback: () async {
-                      game.player.putDownItem();
+                      gameController.game.player.putDownItem();
                       await Future.delayed(const Duration(milliseconds: 500));
                     },
                   ));
@@ -143,7 +140,7 @@ class TheApp extends StatelessWidget {
                   codeController.addCode(CodeModel(
                     "turnRight();",
                     callback: () async {
-                      game.player.turnRight();
+                      gameController.game.player.turnRight();
                       await Future.delayed(const Duration(milliseconds: 500));
                     },
                   ));
@@ -155,7 +152,7 @@ class TheApp extends StatelessWidget {
                   codeController.addCode(CodeModel(
                     "turnLeft();",
                     callback: () async {
-                      game.player.turnLeft();
+                      gameController.game.player.turnLeft();
                       await Future.delayed(const Duration(milliseconds: 500));
                     },
                   ));
@@ -219,7 +216,7 @@ class TheApp extends StatelessWidget {
                 title: Text('isOnClam()'),
                 onTap: () {
                   (codeController.selectedCode.value as IfCodeModel).check =
-                      () => game.player.isOnItem();
+                      () => gameController.game.player.isOnItem();
                   codeController.setCondition('isOnClam()');
                   codeController.clearSelectedCode();
                 },
@@ -228,7 +225,7 @@ class TheApp extends StatelessWidget {
                 title: Text("hasClam()"),
                 onTap: () {
                   (codeController.selectedCode.value as IfCodeModel).check =
-                      () => game.player.hasItem();
+                      () => gameController.game.player.hasItem();
                   codeController.setCondition('hasClam()');
                   codeController.clearSelectedCode();
                 },
