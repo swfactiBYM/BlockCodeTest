@@ -9,6 +9,11 @@ class CodeController extends GetxController {
   /// [IfCodeModel] 이나 [ForCodeModel] 내의 코드들은 해당 리스트에 없음
   RxList<CodeModel> mainCode = <CodeModel>[].obs;
 
+  /// function 정의된 코드
+  ///
+  ///
+  RxList<CodeModel> funcDefCode = <CodeModel>[].obs;
+
   /// 현재 선택 정보의 추가 정보
   ///
   /// [IfCodeModel]이 선택되었을 경우</br>
@@ -20,6 +25,9 @@ class CodeController extends GetxController {
   /// - 2는 [ForCodeModel._subCode]를 설정
   RxInt extra = 0.obs;
 
+  /// mainCode에 추가하고 있는가?
+  RxBool isOnFuncDef = false.obs;
+
   /// 현재 선택된 코드
   Rxn<CodeModel> selectedCode = Rxn<CodeModel>();
 
@@ -29,7 +37,11 @@ class CodeController extends GetxController {
   /// 그 외에는 [selectedCode] 값과 [extra] 값에 따라 각 model에 코드를 추가
   void addCode(CodeModel code) {
     if (extra.value == 0) {
-      mainCode.add(code);
+      if (isOnFuncDef.isFalse) {
+        mainCode.add(code);
+      } else {
+        funcDefCode.add(code);
+      }
     } else {
       if (selectedCode.value is IfCodeModel) {
         /// if문 일 때
@@ -48,9 +60,17 @@ class CodeController extends GetxController {
         if (extra.value == 2) {
           (selectedCode.value as ForCodeModel).addSubCode(code);
         }
+      } else if (selectedCode.value is FunctionCodeModel) {
+        if (extra.value == 2) {
+          (selectedCode.value as FunctionCodeModel).addSubCode(code);
+        }
       }
     }
-    mainCode.refresh();
+    if (isOnFuncDef.isFalse) {
+      mainCode.refresh();
+    } else {
+      funcDefCode.refresh();
+    }
 
     /// 추가뒤 Obx 업데이트를 위한 refresh함수
   }
@@ -60,7 +80,11 @@ class CodeController extends GetxController {
     if (selectedCode.value is IfCodeModel && extra.value == 1) {
       (selectedCode.value as IfCodeModel).condition = condition;
     }
-    mainCode.refresh();
+    if (isOnFuncDef.isFalse) {
+      mainCode.refresh();
+    } else {
+      funcDefCode.refresh();
+    }
   }
 
   /// 선택된 코드 설정
@@ -91,7 +115,22 @@ class CodeController extends GetxController {
         }
       }
     }
-    mainCode.refresh();
+
+    if (funcDefCode.contains(selectedCode.value)) {
+      funcDefCode.remove(selectedCode.value);
+    } else {
+      for (final subC in funcDefCode) {
+        if (subC is HasSubCode) {
+          (subC as HasSubCode).removeSubCode(selectedCode.value);
+        }
+      }
+    }
+
+    if (isOnFuncDef.isFalse) {
+      mainCode.refresh();
+    } else {
+      funcDefCode.refresh();
+    }
   }
 
   /// 코드 실행
@@ -100,10 +139,15 @@ class CodeController extends GetxController {
   Future<void> runCode() async {
     final gameController = Get.find<GameController>();
     for (final code in mainCode) {
-      await code.callback!();
-      if (gameController.isError) {
+      if (gameController.isError || gameController.isGameRunning.isFalse) {
         break;
       }
+      await code.callback!();
     }
+  }
+
+  Future<void> runFunction(FunctionCodeModel code) async {
+    if (!funcDefCode.contains(code)) return;
+    await code.callback!();
   }
 }

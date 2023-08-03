@@ -20,24 +20,31 @@ class GameController extends GetxController {
     setBackgroundColor();
     await codeController.runCode();
     isCleared.value = game.map.checkSuccess(
-        // mapState: [
-        //   "1111111",
-        //   "1000001",
-        //   "1000001",
-        //   "1000001",
-        //   "1000001",
-        //   "1000001",
-        //   "1111111",
-        // ],
-        // inventoryCount: 3,
-        );
-    print(isCleared.value);
-    isGameFinished.value = true;
-    isGameRunning.value = false;
-    setBackgroundColor();
+      // mapState: [
+      //   "1111111",
+      //   "1000001",
+      //   "1000001",
+      //   "1000001",
+      //   "1000001",
+      //   "1000001",
+      //   "1111111",
+      // ],
+      inventoryCount: 3,
+    );
+    // print(isCleared.value);
+    /// 강제 종료 여부 체크
+    if (isGameRunning.isTrue) {
+      isGameFinished.value = true;
+      isGameRunning.value = false;
+      setBackgroundColor();
+    }
   }
 
   void resetGame() {
+    /// 게임 중간 강제 리셋용
+    isGameRunning.value = false;
+
+    /// 정상 리셋 과정
     isGameFinished.value = false;
     isCleared.value = false;
     game.resetgame();

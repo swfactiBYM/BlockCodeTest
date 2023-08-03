@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ui_test/code_model/code_control.dart';
+import 'package:ui_test/code_widget/code_theme.dart';
 import 'package:ui_test/code_widget/code_widget_builder.dart';
 import 'package:ui_test/flame/game_controller.dart';
 import 'package:ui_test/flame/the_game.dart';
@@ -21,12 +22,44 @@ class TheApp extends StatelessWidget {
           flex: 1,
           child: Column(
             children: [
+              Container(
+                child: Row(
+                  children: [
+                    Flexible(
+                        child: TextButton(
+                      style: buttonTheme,
+                      child: const Text(
+                        'main',
+                        style: buttonTextTheme,
+                      ),
+                      onPressed: () {
+                        codeController.isOnFuncDef.value = false;
+                      },
+                    )),
+                    Flexible(
+                        child: TextButton(
+                      style: buttonTheme,
+                      child: const Text(
+                        'func',
+                        style: buttonTextTheme,
+                      ),
+                      onPressed: () {
+                        codeController.isOnFuncDef.value = true;
+                      },
+                    )),
+                  ],
+                ),
+              ),
               SizedBox(
                 height: context.height / 2,
                 child: Obx(() => ListView.builder(
-                      itemCount: codeController.mainCode.length,
+                      itemCount: codeController.isOnFuncDef.isFalse
+                          ? codeController.mainCode.length
+                          : codeController.funcDefCode.length,
                       itemBuilder: (context, idx) {
-                        CodeModel code = codeController.mainCode[idx];
+                        CodeModel code = codeController.isOnFuncDef.isFalse
+                            ? codeController.mainCode[idx]
+                            : codeController.funcDefCode[idx];
                         return CodeWidgetBuilder.codeWidget(code);
                       },
                     )),
@@ -34,7 +67,10 @@ class TheApp extends StatelessWidget {
               Flexible(
                 child: Obx(
                   () => codeController.extra.value != 1
-                      ? normalFunctions()
+                      ? codeController.isOnFuncDef.value &&
+                              codeController.extra.value != 2
+                          ? functionFunctions()
+                          : normalFunctions()
                       : contitionFunctions(),
                 ),
               )
@@ -167,6 +203,21 @@ class TheApp extends StatelessWidget {
                   codeController.addCode(ForCodeModel(0));
                 },
               ),
+              for (final code
+                  in codeController.funcDefCode.whereType<FunctionCodeModel>())
+                ListTile(
+                  title: Text('${code.name}()'),
+                  onTap: () {
+                    codeController.addCode(
+                      CodeModel(
+                        '${code.name}();',
+                        callback: () async {
+                          await codeController.runFunction(code);
+                        },
+                      ),
+                    );
+                  },
+                ),
             ],
           ),
         )
@@ -227,6 +278,44 @@ class TheApp extends StatelessWidget {
                   codeController.clearSelectedCode();
                 },
               ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget functionFunctions() {
+    return Column(
+      children: [
+        DecoratedBox(
+            decoration: const BoxDecoration(color: Color(0xffF0F0F0)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Select a Code",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          codeController.removeRequest();
+                        },
+                        icon: Icon(Icons.delete))
+                  ]),
+            )),
+        Flexible(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            children: [
+              ListTile(
+                title: Text('Function'),
+                onTap: () {
+                  codeController.addCode(FunctionCodeModel(''));
+                },
+              )
             ],
           ),
         )

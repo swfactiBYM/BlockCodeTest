@@ -24,14 +24,20 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     Vector2? initialPosition,
   }) : initPosition = initialPosition ?? Vector2(0, 0);
 
+  /// Normal Scale
   static final unflippedScale = Vector2.all(MapManager.scaleFactor.toDouble());
+
+  /// Flipped Scale for [PlayeyrState.left] and [PlayerState.leftMoving]
   static final flippedScale = Vector2(
       -MapManager.scaleFactor.toDouble(), MapManager.scaleFactor.toDouble());
 
+  /// Initial position of the player
   Vector2 initPosition;
 
-  /// index position of map
+  /// current index position of map
   Vector2 relPos = Vector2(0, 0);
+
+  /// destination index position of map
   Vector2 destPos = Vector2(0, 0);
 
   /// position of background
@@ -47,7 +53,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
   FutureOr<void> onLoad() {
     current = PlayerState.down;
     anchor = Anchor.center;
-    super.scale = unflippedScale;
+    scale = unflippedScale;
     pivotPos = (gameRef.map.size - Vector2.all(1)) *
         10 *
         MapManager.scaleFactor.toDouble();
@@ -55,6 +61,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     _loadSprites();
   }
 
+  /// Check if player is moving
   bool get isMoving =>
       current == PlayerState.downMoving ||
       current == PlayerState.upMoving ||
@@ -63,9 +70,12 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
 
   bool get isMovingIntoWall =>
       gameRef.map.map[destPos.y.toInt()][destPos.x.toInt()] == '1';
+
+  /// Check if player is inside of wall
   bool get isInWall =>
       gameRef.map.map[relPos.y.round()][relPos.x.round()] == '1';
 
+  /// Check if player is outside of map
   bool get isOutOfBounds =>
       relPos.y <= -0.5 ||
       relPos.y >= gameRef.map.height - 0.5 ||
@@ -85,6 +95,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
       }
     }
 
+    /// switch state from stationary to moving
     if (destPos != relPos && !isMoving) {
       switch (current ?? PlayerState.down) {
         case PlayerState.down:
@@ -107,6 +118,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
       }
     }
 
+    /// switch state from moving to stationary
     if ((isMoving && destPos == relPos) || isOutOfBounds || isInWall) {
       switch (current ?? PlayerState.down) {
         case PlayerState.downMoving:
@@ -129,6 +141,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
       }
     }
 
+    /// move player
     if (relPos != destPos && !isOutOfBounds && !isInWall) {
       if ((relPos.x - destPos.x).abs() < 0.01) {
         relPos.x = destPos.x;
@@ -147,6 +160,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
       }
     }
 
+    /// calculate actual position of player
     position = superPos -
         pivotPos +
         relPos * 20 * MapManager.scaleFactor.toDouble() +
@@ -155,6 +169,9 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     super.update(dt);
   }
 
+  /// trigger movement
+  ///
+  /// sets [destPos] according to player direction
   void move() {
     switch (current ?? PlayerState.down) {
       case PlayerState.down:
@@ -176,6 +193,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     }
   }
 
+  /// turn player direction
   void turnRight() {
     switch (current ?? PlayerState.down) {
       case PlayerState.down:
@@ -197,6 +215,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     }
   }
 
+  /// turn player direction
   void turnLeft() {
     switch (current ?? PlayerState.down) {
       case PlayerState.down:
@@ -218,6 +237,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     }
   }
 
+  /// Pick up item from map
   void pickUpItem() {
     if (!isOutOfBounds &&
         gameRef.map.map[relPos.y.round()][relPos.x.round()] == '2') {
@@ -226,6 +246,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     }
   }
 
+  /// Put down item on map
   void putDownItem() {
     if (inventory > 0 && !isOutOfBounds) {
       gameRef.map.setElement(relPos.x.round(), relPos.y.round(), 2);
@@ -233,8 +254,10 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     }
   }
 
+  /// Check if player has picked up item
   bool hasItem() => inventory > 0;
 
+  /// Check if player is standing on item
   bool isOnItem() =>
       !isOutOfBounds &&
       gameRef.map.map[relPos.y.round()][relPos.x.round()] == '2';
@@ -245,7 +268,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     inventory = 0;
     current = PlayerState.down;
     relPos = initPosition.xy;
-    destPos = relPos.xy;
+    destPos = initPosition.xy;
   }
 
   Future<void> _loadSprites() async {

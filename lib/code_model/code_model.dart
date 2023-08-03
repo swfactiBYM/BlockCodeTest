@@ -1,7 +1,12 @@
+import 'package:get/get.dart';
+import 'package:ui_test/flame/game_controller.dart';
+
 /// 코드 데이터 값 저장하는 모델
 
 /// 일반 코드 모델
 class CodeModel {
+  final gameController = Get.find<GameController>();
+
   /// 코드
   String code;
 
@@ -47,10 +52,18 @@ class IfCodeModel extends CodeModel implements HasSubCode {
         if (check == null) return;
         if (check!()) {
           for (final subC in _ifCode) {
+            if (gameController.isError ||
+                gameController.isGameRunning.isFalse) {
+              break;
+            }
             await subC.callback!();
           }
         } else {
           for (final subC in _elseCode) {
+            if (gameController.isError ||
+                gameController.isGameRunning.isFalse) {
+              break;
+            }
             await subC.callback!();
           }
         }
@@ -71,16 +84,8 @@ class IfCodeModel extends CodeModel implements HasSubCode {
     } else if (elseCode.contains(code)) {
       elseCode.remove(code);
     } else {
-      for (final subC in ifCode) {
-        if (subC is HasSubCode) {
-          (subC as HasSubCode).removeSubCode(code);
-        }
-      }
-      for (final subC in elseCode) {
-        if (subC is HasSubCode) {
-          (subC as HasSubCode).removeSubCode(code);
-        }
-      }
+      ifCode.whereType<HasSubCode>().forEach((e) => e.removeSubCode(code));
+      elseCode.whereType<HasSubCode>().forEach((e) => e.removeSubCode(code));
     }
   }
 
@@ -126,11 +131,7 @@ class ForCodeModel extends CodeModel implements HasSubCode {
     if (subCode.contains(code)) {
       subCode.remove(code);
     } else {
-      for (final subC in subCode) {
-        if (subC is HasSubCode) {
-          (subC as HasSubCode).removeSubCode(code);
-        }
-      }
+      subCode.whereType<HasSubCode>().forEach((e) => e.removeSubCode(code));
     }
   }
 
@@ -141,6 +142,10 @@ class ForCodeModel extends CodeModel implements HasSubCode {
   Future<void> Function()? get callback => () async {
         for (int i = 0; i < iterCount; i++) {
           for (final subC in subCode) {
+            if (gameController.isError ||
+                gameController.isGameRunning.isFalse) {
+              break;
+            }
             await subC.callback!();
           }
         }
@@ -177,11 +182,7 @@ class FunctionCodeModel extends CodeModel implements HasSubCode {
     if (subCode.contains(code)) {
       subCode.remove(code);
     } else {
-      for (final subC in subCode) {
-        if (subC is HasSubCode) {
-          (subC as HasSubCode).removeSubCode(code);
-        }
-      }
+      subCode.whereType<HasSubCode>().forEach((e) => e.removeSubCode(code));
     }
   }
 
@@ -191,6 +192,9 @@ class FunctionCodeModel extends CodeModel implements HasSubCode {
   @override
   Future<void> Function()? get callback => () async {
         for (final subC in subCode) {
+          if (gameController.isError || gameController.isGameRunning.isFalse) {
+            break;
+          }
           await subC.callback!();
         }
       };

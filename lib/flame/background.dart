@@ -12,7 +12,7 @@ class Background extends CustomPainterComponent with HasGameRef<TheGame> {
 
   @override
   Future<void> onLoad() async {
-    final image = await loadImage('assets/images/background_atlas.png');
+    final image = await loadImage('assets/images/background_atlas_city.png');
     final width = gameRef.map.map[0].length;
     final height = gameRef.map.map.length;
     size = Vector2(width * 20, height * 20);
@@ -20,8 +20,11 @@ class Background extends CustomPainterComponent with HasGameRef<TheGame> {
     scale = Vector2.all(MapManager.scaleFactor.toDouble());
     anchor = Anchor.center;
     painter = BackgroundPainter(img: image, map: gameRef.map.map);
-    var flag = await gameRef.loadSprite('background_atlas.png',
-        srcSize: Vector2(20, 20), srcPosition: Vector2(0, 40));
+    var flag = await gameRef.loadSprite(
+      'background_atlas_city.png',
+      srcSize: Vector2(20, 20),
+      srcPosition: Vector2(0, 40),
+    );
     add(SpriteComponent(
         sprite: flag,
         position: gameRef.map.destination.xy * 20 + Vector2(0, -4)));
@@ -77,7 +80,7 @@ class BackgroundPainter extends CustomPainter {
         canvas.drawImageRect(
           img,
           Rect.fromLTWH(ri * 20 + 40, rj * 20, 20, 20),
-          Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0),
+          Rect.fromLTWH(i * 20.0, (j * 20.0 - .0), 20.0, 20.0),
           Paint()..isAntiAlias = true,
         );
       }
