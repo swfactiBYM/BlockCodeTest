@@ -5,6 +5,7 @@ import 'package:ui_test/code_widget/for_code_widget.dart';
 import 'package:ui_test/code_widget/function_def_code_widget.dart';
 import 'package:ui_test/code_widget/if_code_widget.dart';
 import 'package:ui_test/code_widget/plain_code_widget.dart';
+import 'package:ui_test/code_widget/while_code_widget.dart';
 
 class CodeWidgetBuilder {
   static Widget codeWidget(CodeModel code) {
@@ -14,8 +15,10 @@ class CodeWidgetBuilder {
       return ForCodeWidget(codeRx: code.obs);
     } else if (code is FunctionCodeModel) {
       return FunctionDefWidget(codeRx: code.obs);
+    } else if (code is WhileCodeModel) {
+      return WhileCodeWidget(codeRx: code.obs);
     } else {
-      return PlainCodeWidget(code: code);
+      return PlainCodeWidget(codeRx: code.obs);
     }
   }
 }

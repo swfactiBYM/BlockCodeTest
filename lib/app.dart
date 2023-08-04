@@ -1,3 +1,4 @@
+import 'package:dart_eval/dart_eval.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -203,6 +204,12 @@ class TheApp extends StatelessWidget {
                   codeController.addCode(ForCodeModel(0));
                 },
               ),
+              ListTile(
+                title: Text("while"),
+                onTap: () {
+                  codeController.addCode(WhileCodeModel());
+                },
+              ),
               for (final code
                   in codeController.funcDefCode.whereType<FunctionCodeModel>())
                 ListTile(
@@ -263,7 +270,7 @@ class TheApp extends StatelessWidget {
               ListTile(
                 title: Text('isOnClam()'),
                 onTap: () {
-                  (codeController.selectedCode.value as IfCodeModel).check =
+                  (codeController.selectedCode.value as HasCheck).check =
                       () => gameController.game.player.isOnItem();
                   codeController.setCondition('isOnClam()');
                   codeController.clearSelectedCode();
@@ -272,7 +279,7 @@ class TheApp extends StatelessWidget {
               ListTile(
                 title: Text("hasClam()"),
                 onTap: () {
-                  (codeController.selectedCode.value as IfCodeModel).check =
+                  (codeController.selectedCode.value as HasCheck).check =
                       () => gameController.game.player.hasItem();
                   codeController.setCondition('hasClam()');
                   codeController.clearSelectedCode();
@@ -313,6 +320,7 @@ class TheApp extends StatelessWidget {
               ListTile(
                 title: Text('Function'),
                 onTap: () {
+                  print(eval('2+2'));
                   codeController.addCode(FunctionCodeModel(''));
                 },
               )

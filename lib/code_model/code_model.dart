@@ -24,12 +24,24 @@ class CodeModel {
 /// 내부에 다른 코드들을 가지고 있는 코드들(if, for, 등등...)을 위한 interface
 /// 코드 삭제할 때 recursive하게 removeSubCode를 호출
 class HasSubCode {
+  void addSubCode(CodeModel code) {}
   void removeSubCode(CodeModel? code) {}
 }
 
-/// if Code
-class IfCodeModel extends CodeModel implements HasSubCode {
+class HasCheck {
   /// 조건문 String
+  String? condition;
+
+  /// 조건을 확인할 때 호출되는 callback함수
+  bool Function()? check;
+
+  void setCondition(String cond) => condition = cond;
+}
+
+/// if Code
+class IfCodeModel extends CodeModel implements HasSubCode, HasCheck {
+  /// 조건문 String
+  @override
   String? condition;
 
   IfCodeModel() : super("if");
@@ -41,6 +53,7 @@ class IfCodeModel extends CodeModel implements HasSubCode {
   final List<CodeModel> _elseCode = [];
 
   /// 조건을 확인할 때 호출되는 callback함수
+  @override
   bool Function()? check;
 
   /// 실행시 호출 되는 callback함수
@@ -89,6 +102,7 @@ class IfCodeModel extends CodeModel implements HasSubCode {
     }
   }
 
+  @override
   void setCondition(String cond) => condition = cond;
 
   @override
@@ -108,6 +122,9 @@ $ifC
 $elC
 }''';
   }
+
+  @override
+  void addSubCode(CodeModel code) {}
 }
 
 /// for Code
@@ -122,6 +139,7 @@ class ForCodeModel extends CodeModel implements HasSubCode {
 
   /// 외부용 함수
   List<CodeModel> get subCode => _subCode;
+  @override
   void addSubCode(CodeModel code) => _subCode.add(code);
 
   /// 내부코드 삭제용 함수, [HasSubCode] 에서 inherit
@@ -161,6 +179,67 @@ $subC
   }
 }
 
+/// for Code
+class WhileCodeModel extends CodeModel implements HasSubCode, HasCheck {
+  /// 조건문 String
+  @override
+  String? condition;
+
+  /// 실행시킬 코드 목록
+  final List<CodeModel> _subCode = [];
+
+  WhileCodeModel() : super("while");
+
+  /// 외부용 함수
+  List<CodeModel> get subCode => _subCode;
+  @override
+  void addSubCode(CodeModel code) => _subCode.add(code);
+
+  /// 내부코드 삭제용 함수, [HasSubCode] 에서 inherit
+  @override
+  void removeSubCode(CodeModel? code) {
+    if (code == null) return;
+    if (subCode.contains(code)) {
+      subCode.remove(code);
+    } else {
+      subCode.whereType<HasSubCode>().forEach((e) => e.removeSubCode(code));
+    }
+  }
+
+  /// 조건을 확인할 때 호출되는 callback함수
+  @override
+  bool Function()? check;
+
+  /// 실행시 호출되는 callback함수
+  ///
+  /// [iterCount]만큼 [_subCode] 내의 모든 코드의 [callback] 실행
+  @override
+  Future<void> Function()? get callback => () async {
+        if (check == null) return;
+        while (check!()) {
+          for (final subC in subCode) {
+            if (gameController.isError ||
+                gameController.isGameRunning.isFalse) {
+              break;
+            }
+            await subC.callback!();
+          }
+        }
+      };
+
+  @override
+  void setCondition(String cond) => condition = cond;
+
+  @override
+  String getCode() {
+    final subC =
+        _subCode.fold('', (prev, elem) => '$prev\t${elem.getCode()}\n');
+    return '''while($condition) {
+$subC
+}''';
+  }
+}
+
 /// Function Code
 class FunctionCodeModel extends CodeModel implements HasSubCode {
   /// 함수 이름
@@ -173,6 +252,7 @@ class FunctionCodeModel extends CodeModel implements HasSubCode {
 
   /// 외부용 함수
   List<CodeModel> get subCode => _subCode;
+  @override
   void addSubCode(CodeModel code) => _subCode.add(code);
 
   /// 내부코드 삭제용 함수, [HasSubCode] 에서 inherit

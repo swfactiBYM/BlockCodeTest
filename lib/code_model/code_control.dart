@@ -17,12 +17,16 @@ class CodeController extends GetxController {
   /// 현재 선택 정보의 추가 정보
   ///
   /// [IfCodeModel]이 선택되었을 경우</br>
-  /// - 1은 [IfCodeModel.check]을 설정
+  /// - 1은 [IfCodeModel.check]를 설정
   /// - 2는 [IfCodeModel._ifCode]를 설정
   /// - 3은 [IfCodeModel._elseCode]를 설정
   /// </br>
   /// [ForCodeModel]이 선택되었을 경우</br>
   /// - 2는 [ForCodeModel._subCode]를 설정
+  /// </br>
+  /// [WhileCodeModel]이 선택되었을 경우</br>
+  /// - 1은 [WhileCodeModel.check]를 설정
+  /// - 2는 [WhileCodeModel._subCode]를 설정
   RxInt extra = 0.obs;
 
   /// mainCode에 추가하고 있는가?
@@ -55,15 +59,8 @@ class CodeController extends GetxController {
           default:
             break;
         }
-      } else if (selectedCode.value is ForCodeModel) {
-        /// for문 일 때
-        if (extra.value == 2) {
-          (selectedCode.value as ForCodeModel).addSubCode(code);
-        }
-      } else if (selectedCode.value is FunctionCodeModel) {
-        if (extra.value == 2) {
-          (selectedCode.value as FunctionCodeModel).addSubCode(code);
-        }
+      } else if (selectedCode.value is HasSubCode) {
+        (selectedCode.value as HasSubCode).addSubCode(code);
       }
     }
     if (isOnFuncDef.isFalse) {
@@ -77,8 +74,8 @@ class CodeController extends GetxController {
 
   /// 조건문 설정
   void setCondition(String condition) {
-    if (selectedCode.value is IfCodeModel && extra.value == 1) {
-      (selectedCode.value as IfCodeModel).condition = condition;
+    if (selectedCode.value is HasCheck && extra.value == 1) {
+      (selectedCode.value as HasCheck).condition = condition;
     }
     if (isOnFuncDef.isFalse) {
       mainCode.refresh();
