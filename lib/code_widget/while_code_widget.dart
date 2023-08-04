@@ -5,10 +5,10 @@ import 'package:ui_test/code_model/code_model.dart';
 import 'package:ui_test/code_widget/code_theme.dart';
 import 'package:ui_test/code_widget/code_widget_builder.dart';
 
-class IfCodeWidget extends StatelessWidget {
-  final Rx<IfCodeModel> codeRx;
+class WhileCodeWidget extends StatelessWidget {
+  final Rx<WhileCodeModel> codeRx;
 
-  const IfCodeWidget({super.key, required this.codeRx});
+  const WhileCodeWidget({super.key, required this.codeRx});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class IfCodeWidget extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text("if ("),
+                    Text("while ("),
                     codeRx.value.condition == null
                         ? conditionButton()
                         : Text(codeRx.value.condition!),
@@ -36,32 +36,14 @@ class IfCodeWidget extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        for (final code in codeRx.value.ifCode)
+                        for (final code in codeRx.value.subCode)
                           CodeWidgetBuilder.codeWidget(code),
-                        ifCodeButton(),
+                        subCodeButton(),
                       ],
                     )
                   ],
                 ),
                 Text("}"),
-                if (codeRx.value.elseCode.isNotEmpty) ...[
-                  Text("else {"),
-                  Row(
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Column(
-                        children: [
-                          for (final code in codeRx.value.elseCode)
-                            CodeWidgetBuilder.codeWidget(code),
-                          elseCodeButton(),
-                        ],
-                      )
-                    ],
-                  ),
-                  Text("}")
-                ]
               ],
             ),
           ),
@@ -83,7 +65,7 @@ class IfCodeWidget extends StatelessWidget {
     );
   }
 
-  Widget ifCodeButton() {
+  Widget subCodeButton() {
     return ElevatedButton(
       child: Text(
         'action',
@@ -91,19 +73,6 @@ class IfCodeWidget extends StatelessWidget {
       ),
       onPressed: () {
         Get.find<CodeController>().setSelectedCode(codeRx.value, extra: 2);
-      },
-      style: buttonTheme,
-    );
-  }
-
-  Widget elseCodeButton() {
-    return ElevatedButton(
-      child: Text(
-        'action',
-        style: buttonTextTheme,
-      ),
-      onPressed: () {
-        Get.find<CodeController>().setSelectedCode(codeRx.value, extra: 3);
       },
       style: buttonTheme,
     );

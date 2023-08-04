@@ -18,7 +18,7 @@ class ForCodeWidget extends StatelessWidget {
     editor.text = codeRx.value.iterCount.toString();
     return Stack(
       children: [
-        GestureDetector(
+        InkWell(
           onTap: () => Get.find<CodeController>()
               .setSelectedCode(codeRx.value, extra: 0),
           child: Obx(() => Column(

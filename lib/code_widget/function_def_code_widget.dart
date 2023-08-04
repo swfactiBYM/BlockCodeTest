@@ -9,6 +9,7 @@ import 'code_theme.dart';
 class FunctionDefWidget extends StatelessWidget {
   final Rx<FunctionCodeModel> codeRx;
   final TextEditingController editor = TextEditingController(text: 'function');
+  final codeController = Get.find<CodeController>();
 
   FunctionDefWidget({super.key, required this.codeRx});
 
@@ -17,7 +18,7 @@ class FunctionDefWidget extends StatelessWidget {
     editor.text = codeRx.value.name;
     return Stack(
       children: [
-        GestureDetector(
+        InkWell(
           onTap: () => Get.find<CodeController>()
               .setSelectedCode(codeRx.value, extra: 0),
           child: Obx(() => Column(

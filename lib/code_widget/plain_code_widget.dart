@@ -4,19 +4,19 @@ import 'package:ui_test/code_model/code_control.dart';
 import 'package:ui_test/code_model/code_model.dart';
 
 class PlainCodeWidget extends StatelessWidget {
-  final CodeModel code;
+  final Rx<CodeModel> codeRx;
 
-  const PlainCodeWidget({super.key, required this.code});
+  const PlainCodeWidget({super.key, required this.codeRx});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Text(code.getCode()),
+        Obx(() => Text(codeRx.value.getCode())),
         Positioned.fill(
-          child: GestureDetector(
-            onTap: () =>
-                Get.find<CodeController>().setSelectedCode(code, extra: 0),
+          child: InkWell(
+            onTap: () => Get.find<CodeController>()
+                .setSelectedCode(codeRx.value, extra: 0),
           ),
         ),
       ],
