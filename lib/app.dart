@@ -285,6 +285,24 @@ class TheApp extends StatelessWidget {
                   codeController.clearSelectedCode();
                 },
               ),
+              ListTile(
+                title: Text("frontIsWall()"),
+                onTap: () {
+                  (codeController.selectedCode.value as HasCheck).check =
+                      () => gameController.game.player.frontIsWall();
+                  codeController.setCondition('frontIsWall()');
+                  codeController.clearSelectedCode();
+                },
+              ),
+              ListTile(
+                title: Text("frontIsNotWall()"),
+                onTap: () {
+                  (codeController.selectedCode.value as HasCheck).check =
+                      () => !gameController.game.player.frontIsWall();
+                  codeController.setCondition('frontIsNotWall()');
+                  codeController.clearSelectedCode();
+                },
+              )
             ],
           ),
         )

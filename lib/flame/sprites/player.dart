@@ -17,6 +17,18 @@ enum PlayerState {
   rightMoving
 }
 
+Map<PlayerState?, Vector2> dirVec = {
+  PlayerState.up: Vector2(0, -1),
+  PlayerState.upMoving: Vector2(0, -1),
+  PlayerState.down: Vector2(0, 1),
+  PlayerState.downMoving: Vector2(0, 1),
+  PlayerState.left: Vector2(-1, 0),
+  PlayerState.leftMoving: Vector2(-1, 0),
+  PlayerState.right: Vector2(1, 0),
+  PlayerState.rightMoving: Vector2(1, 0),
+  null: Vector2(0, 1),
+};
+
 class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     with HasGameRef<TheGame> {
   PlayerSprite({
@@ -173,24 +185,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
   ///
   /// sets [destPos] according to player direction
   void move() {
-    switch (current ?? PlayerState.down) {
-      case PlayerState.down:
-      case PlayerState.downMoving:
-        destPos += Vector2(0, 1);
-        break;
-      case PlayerState.up:
-      case PlayerState.upMoving:
-        destPos += Vector2(0, -1);
-        break;
-      case PlayerState.left:
-      case PlayerState.leftMoving:
-        destPos += Vector2(-1, 0);
-        break;
-      case PlayerState.right:
-      case PlayerState.rightMoving:
-        destPos += Vector2(1, 0);
-        break;
-    }
+    destPos += dirVec[current]!;
   }
 
   /// turn player direction
@@ -263,6 +258,11 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
       gameRef.map.map[relPos.y.round()][relPos.x.round()] == '2';
 
   bool isInDestination() => destPos == gameRef.map.destination;
+
+  bool frontIsWall() {
+    final pos = destPos + dirVec[current]!;
+    return gameRef.map.map[pos.y.toInt()][pos.x.toInt()] == '1';
+  }
 
   void reset() {
     inventory = 0;
