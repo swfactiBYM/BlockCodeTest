@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'app.dart';
+import 'pages/code_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +19,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
       ),
-      home: TheApp(),
+      builder: ((context, child) {
+        return CodePage();
+      }),
     );
   }
 }

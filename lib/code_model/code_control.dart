@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:ui_test/code_model/code_model.dart';
 import 'package:ui_test/flame/game_controller.dart';
 
+enum MODE { basic, ifCondition, ifAction }
+
 class CodeController extends GetxController {
   /// 주 화면 내의 모든 코드
   ///
