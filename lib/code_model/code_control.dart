@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:ui_test/code_model/code_model.dart';
 import 'package:ui_test/flame/game_controller.dart';
+import 'package:ui_test/flame/sprites/player.dart';
 
 enum MODE { basic, ifCondition, ifAction }
 
@@ -138,10 +139,14 @@ class CodeController extends GetxController {
   Future<void> runCode() async {
     final gameController = Get.find<GameController>();
     for (final code in mainCode) {
-      if (gameController.isError || gameController.isGameRunning.isFalse) {
+      try {
+        if (gameController.isError || gameController.isGameRunning.isFalse) {
+          break;
+        }
+        await code.callback!();
+      } on PlayerErrorException {
         break;
       }
-      await code.callback!();
     }
   }
 
