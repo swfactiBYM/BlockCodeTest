@@ -273,12 +273,12 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     return gameRef.map.map[pos.y.toInt()][pos.x.toInt()] == '1';
   }
 
-  bool frontIsWood() {
+  bool frontIsObstacle() {
     final pos = destPos + dirVec[current]!;
     return gameRef.map.map[pos.y.toInt()][pos.x.toInt()] == '3';
   }
 
-  void chopWood() {
+  void destroyObstacle() {
     final pos = destPos + dirVec[current]!;
     if (gameRef.map.map[pos.y.toInt()][pos.x.toInt()] == '3') {
       gameRef.map.setElement(pos.x.toInt(), pos.y.toInt(), '4');

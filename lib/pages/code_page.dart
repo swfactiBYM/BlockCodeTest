@@ -194,12 +194,12 @@ class CodePage extends StatelessWidget {
                 },
               ),
               ListTile(
-                title: Text('chopWood()'),
+                title: Text('destroyThorns()'),
                 onTap: () {
                   codeController.addCode(CodeModel(
-                    "chopWood();",
+                    "destoryThorns();",
                     callback: () async {
-                      gameController.game.player.chopWood();
+                      gameController.game.player.destroyObstacle();
                       await Future.delayed(const Duration(milliseconds: 500));
                     },
                   ));
@@ -211,7 +211,10 @@ class CodePage extends StatelessWidget {
                   codeController.addCode(IfCodeModel());
                 },
               ),
-              if (codeController.selectedCode.value is IfCodeModel)
+              if (codeController.selectedCode.value is IfCodeModel &&
+                  (codeController.selectedCode.value as IfCodeModel)
+                      .elseCode
+                      .isEmpty)
                 ListTile(
                   title: Text("else"),
                   onTap: () {
@@ -308,6 +311,24 @@ class CodePage extends StatelessWidget {
                 },
               ),
               ListTile(
+                title: Text("isOnFlag()"),
+                onTap: () {
+                  (codeController.selectedCode.value as HasCheck).check =
+                      () => gameController.game.player.isOnDestination();
+                  codeController.setCondition('isOnDestination()');
+                  codeController.clearSelectedCode();
+                },
+              ),
+              ListTile(
+                title: Text("isNotOnFlag()"),
+                onTap: () {
+                  (codeController.selectedCode.value as HasCheck).check =
+                      () => !gameController.game.player.isOnDestination();
+                  codeController.setCondition('isNotOnFlag()');
+                  codeController.clearSelectedCode();
+                },
+              ),
+              ListTile(
                 title: Text("frontIsWall()"),
                 onTap: () {
                   (codeController.selectedCode.value as HasCheck).check =
@@ -326,11 +347,11 @@ class CodePage extends StatelessWidget {
                 },
               ),
               ListTile(
-                title: Text("frontIsWood()"),
+                title: Text("frontIsThorns()"),
                 onTap: () {
                   (codeController.selectedCode.value as HasCheck).check =
-                      () => gameController.game.player.frontIsWood();
-                  codeController.setCondition('frontIsWood()');
+                      () => gameController.game.player.frontIsObstacle();
+                  codeController.setCondition('frontIsThorns()');
                   codeController.clearSelectedCode();
                 },
               ),
