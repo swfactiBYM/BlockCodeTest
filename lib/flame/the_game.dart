@@ -72,11 +72,11 @@ class TheGame extends FlameGame {
   void resetgame() {
     map.changeMap([
       "1111111",
-      "1000001",
+      "1000301",
       "1200021",
+      "1300031",
       "1000001",
-      "1000001",
-      "1020001",
+      "1020301",
       "1111111",
     ]);
     player.reset();

@@ -9,11 +9,11 @@ class MapManager extends Component with HasGameRef<TheGame> {
   /// - 0 air
   List<String> map = [
     "1111111",
-    "1000001",
+    "1000301",
     "1200021",
+    "1300031",
     "1000001",
-    "1000001",
-    "1020001",
+    "1020301",
     "1111111",
   ];
   int get width => map[0].length;
@@ -36,10 +36,10 @@ class MapManager extends Component with HasGameRef<TheGame> {
   }
 
   /// Set map element
-  void setElement(int x, int y, int element) {
+  void setElement(int x, int y, String element) {
     final l = map[y].substring(0, x);
     final r = map[y].substring(x + 1);
-    map[y] = l + element.toString() + r;
+    map[y] = '$l$element$r';
   }
 
   /// Check if game is cleared

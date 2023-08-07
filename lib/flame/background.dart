@@ -21,7 +21,7 @@ class Background extends CustomPainterComponent with HasGameRef<TheGame> {
     anchor = Anchor.center;
     painter = BackgroundPainter(img: image, map: gameRef.map.map);
     var flag = await gameRef.loadSprite(
-      'background_atlas_city.png',
+      'background_atlas.png',
       srcSize: Vector2(20, 20),
       srcPosition: Vector2(0, 40),
     );
@@ -67,20 +67,26 @@ class BackgroundPainter extends CustomPainter {
         final ri = r.nextInt(2);
         final rj = r.nextInt(3);
         if (map[j][i] == '0') continue;
-        if (map[j][i] == '2') {
-          canvas.drawImageRect(
-            img,
-            const Rect.fromLTWH(20, 40, 20, 20),
-            Rect.fromLTWH(i * 20.0, j * 20.0, 20.0, 20.0),
-            Paint()..isAntiAlias = true,
-          );
-          continue;
+        var src = Rect.zero;
+        var dst = Rect.zero;
+        if (map[j][i] == '1') {
+          src = Rect.fromLTWH(ri * 20 + 40, rj * 20, 20, 20);
+          dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
+        } else if (map[j][i] == '2') {
+          src = Rect.fromLTWH(20, 40, 20, 20);
+          dst = Rect.fromLTWH(i * 20.0, j * 20.0, 20.0, 20.0);
+        } else if (map[j][i] == '3') {
+          src = Rect.fromLTWH(80, 0, 20, 20);
+          dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
+        } else if (map[j][i] == '4') {
+          src = Rect.fromLTWH(80, 20, 20, 20);
+          dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
         }
 
         canvas.drawImageRect(
           img,
-          Rect.fromLTWH(ri * 20 + 40, rj * 20, 20, 20),
-          Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0),
+          src,
+          dst,
           Paint()..isAntiAlias = true,
         );
       }
