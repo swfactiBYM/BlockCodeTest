@@ -9,7 +9,9 @@ import 'package:ui_test/code_widget/while_code_widget.dart';
 
 class CodeWidgetBuilder {
   static Widget codeWidget(CodeModel code) {
-    if (code is IfCodeModel) {
+    if (code is PlaceHolderCodeModel) {
+      return const SizedBox();
+    } else if (code is IfCodeModel) {
       return IfCodeWidget(codeRx: code.obs);
     } else if (code is ForCodeModel) {
       return ForCodeWidget(codeRx: code.obs);

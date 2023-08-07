@@ -21,6 +21,12 @@ class CodeModel {
   }
 }
 
+class PlaceHolderCodeModel extends CodeModel {
+  PlaceHolderCodeModel() : super('');
+  @override
+  Future<void> Function()? get callback => () async {};
+}
+
 /// 내부에 다른 코드들을 가지고 있는 코드들(if, for, 등등...)을 위한 interface
 /// 코드 삭제할 때 recursive하게 removeSubCode를 호출
 class HasSubCode {

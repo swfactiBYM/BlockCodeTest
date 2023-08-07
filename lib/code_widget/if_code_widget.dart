@@ -8,7 +8,7 @@ import 'package:ui_test/code_widget/code_widget_builder.dart';
 class IfCodeWidget extends StatelessWidget {
   final Rx<IfCodeModel> codeRx;
 
-  const IfCodeWidget({super.key, required this.codeRx});
+  IfCodeWidget({super.key, required this.codeRx});
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +43,20 @@ class IfCodeWidget extends StatelessWidget {
                     )
                   ],
                 ),
-                Text("}"),
+                Row(
+                  children: [
+                    Text("}"),
+                    if (codeRx.value.elseCode.isNotEmpty) Text(" else {"),
+                  ],
+                ),
                 if (codeRx.value.elseCode.isNotEmpty) ...[
-                  Text("else {"),
                   Row(
                     children: [
                       const SizedBox(
                         width: 10,
                       ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           for (final code in codeRx.value.elseCode)
                             CodeWidgetBuilder.codeWidget(code),

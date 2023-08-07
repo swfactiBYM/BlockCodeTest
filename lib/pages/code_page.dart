@@ -211,6 +211,15 @@ class CodePage extends StatelessWidget {
                   codeController.addCode(IfCodeModel());
                 },
               ),
+              if (codeController.selectedCode.value is IfCodeModel)
+                ListTile(
+                  title: Text("else"),
+                  onTap: () {
+                    (codeController.selectedCode.value as IfCodeModel)
+                        .addElseCode(PlaceHolderCodeModel());
+                    codeController.mainCode.refresh();
+                  },
+                ),
               ListTile(
                 title: Text("for"),
                 onTap: () {
