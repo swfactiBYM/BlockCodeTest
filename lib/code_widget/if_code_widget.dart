@@ -24,9 +24,7 @@ class IfCodeWidget extends StatelessWidget {
                 Row(
                   children: [
                     Text("if ("),
-                    codeRx.value.condition == null
-                        ? conditionButton()
-                        : Text(codeRx.value.condition!),
+                    conditionButton(codeRx.value.condition),
                     Text(") {"),
                   ],
                 ),
@@ -75,14 +73,14 @@ class IfCodeWidget extends StatelessWidget {
     );
   }
 
-  Widget conditionButton() {
+  Widget conditionButton([String? txt]) {
     return ElevatedButton(
       onPressed: () {
         Get.find<CodeController>().setSelectedCode(codeRx.value, extra: 1);
       },
       style: buttonTheme,
-      child: const Text(
-        'condition',
+      child: Text(
+        txt ?? 'condition',
         style: buttonTextTheme,
       ),
     );
