@@ -4,8 +4,9 @@ import 'dart:ui' as ui;
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:ui_test/flame/functions.dart';
-import 'package:ui_test/flame/manager/map.dart';
 import 'package:ui_test/flame/the_game.dart';
+
+import 'sprites/moveable.dart';
 
 class Background extends CustomPainterComponent with HasGameRef<TheGame> {
   Background(Vector2 pos) : super(position: pos);
@@ -17,7 +18,7 @@ class Background extends CustomPainterComponent with HasGameRef<TheGame> {
     final height = gameRef.map.map.length;
     size = Vector2(width * 20, height * 20);
 
-    scale = Vector2.all(MapManager.scaleFactor.toDouble());
+    scale = Vector2.all(gameRef.map.scaleFactor.toDouble());
     anchor = Anchor.center;
     painter = BackgroundPainter(img: image, map: gameRef.map.map);
     var flag = await gameRef.loadSprite(
@@ -25,9 +26,27 @@ class Background extends CustomPainterComponent with HasGameRef<TheGame> {
       srcSize: Vector2(20, 20),
       srcPosition: Vector2(0, 40),
     );
-    add(SpriteComponent(
+    add(
+      SpriteComponent(
         sprite: flag,
-        position: gameRef.map.destination.xy * 20 + Vector2(0, -4)));
+        position: gameRef.map.destination.xy * 20 + Vector2(0, -4),
+      ),
+    );
+
+    final pos = Vector2(gameRef.size.x / 2, gameRef.size.y / 2);
+
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        if (gameRef.map.map[i][j] == 'P') {
+          final obj = MovableSprite(
+            superPos: pos.xy,
+            initialPos: Vector2(j.toDouble(), i.toDouble()),
+          );
+          gameRef.map.pushables.add(obj);
+          gameRef.add(obj);
+        }
+      }
+    }
   }
 }
 
@@ -69,17 +88,29 @@ class BackgroundPainter extends CustomPainter {
         if (map[j][i] == '0') continue;
         var src = Rect.zero;
         var dst = Rect.zero;
-        if (map[j][i] == '1') {
+        if (map[j][i] == 'W') {
           src = Rect.fromLTWH(ri * 20 + 40, rj * 20, 20, 20);
           dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
-        } else if (map[j][i] == '2') {
+        } else if (map[j][i] == 'I') {
           src = Rect.fromLTWH(20, 40, 20, 20);
           dst = Rect.fromLTWH(i * 20.0, j * 20.0, 20.0, 20.0);
-        } else if (map[j][i] == '3') {
+        } else if (map[j][i] == 'B') {
           src = Rect.fromLTWH(80, 0, 20, 20);
           dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
-        } else if (map[j][i] == '4') {
+        } else if (map[j][i] == 'b') {
           src = Rect.fromLTWH(80, 20, 20, 20);
+          dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
+        } else if (map[j][i] == 'T') {
+          src = Rect.fromLTWH(20, 60, 20, 20);
+          dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
+        } else if (map[j][i] == 't') {
+          src = Rect.fromLTWH(40, 60, 20, 20);
+          dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
+        } else if (map[j][i] == 'L') {
+          src = Rect.fromLTWH(60, 60, 20, 20);
+          dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
+        } else if (map[j][i] == 'l') {
+          src = Rect.fromLTWH(80, 60, 20, 20);
           dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
         }
 

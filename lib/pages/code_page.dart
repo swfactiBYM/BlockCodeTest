@@ -14,7 +14,7 @@ class CodePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
+    // final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       body: Row(children: [
         Expanded(
@@ -206,6 +206,30 @@ class CodePage extends StatelessWidget {
                 },
               ),
               ListTile(
+                title: Text('pushMushroom()'),
+                onTap: () {
+                  codeController.addCode(CodeModel(
+                    "pushMushroom();",
+                    callback: () async {
+                      gameController.game.player.pushPushable();
+                      await Future.delayed(const Duration(milliseconds: 500));
+                    },
+                  ));
+                },
+              ),
+              ListTile(
+                title: Text('pullLever()'),
+                onTap: () {
+                  codeController.addCode(CodeModel(
+                    "pullLever();",
+                    callback: () async {
+                      gameController.game.player.pullLever();
+                      await Future.delayed(const Duration(milliseconds: 500));
+                    },
+                  ));
+                },
+              ),
+              ListTile(
                 title: Text("if"),
                 onTap: () {
                   codeController.addCode(IfCodeModel());
@@ -352,6 +376,24 @@ class CodePage extends StatelessWidget {
                   (codeController.selectedCode.value as HasCheck).check =
                       () => gameController.game.player.frontIsObstacle();
                   codeController.setCondition('frontIsThorns()');
+                  codeController.clearSelectedCode();
+                },
+              ),
+              ListTile(
+                title: Text("frontIsMushroom()"),
+                onTap: () {
+                  (codeController.selectedCode.value as HasCheck).check =
+                      () => gameController.game.player.frontIsPushable();
+                  codeController.setCondition('frontIsMushroom()');
+                  codeController.clearSelectedCode();
+                },
+              ),
+              ListTile(
+                title: Text("isOnLever()"),
+                onTap: () {
+                  (codeController.selectedCode.value as HasCheck).check =
+                      () => gameController.game.player.isOnLever();
+                  codeController.setCondition('isOnLever()');
                   codeController.clearSelectedCode();
                 },
               ),

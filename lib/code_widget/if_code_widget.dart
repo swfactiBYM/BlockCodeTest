@@ -88,27 +88,27 @@ class IfCodeWidget extends StatelessWidget {
 
   Widget ifCodeButton() {
     return ElevatedButton(
-      child: Text(
-        'action',
-        style: buttonTextTheme,
-      ),
       onPressed: () {
         Get.find<CodeController>().setSelectedCode(codeRx.value, extra: 2);
       },
       style: buttonTheme,
+      child: const Text(
+        'action',
+        style: buttonTextTheme,
+      ),
     );
   }
 
   Widget elseCodeButton() {
     return ElevatedButton(
-      child: Text(
-        'action',
-        style: buttonTextTheme,
-      ),
       onPressed: () {
         Get.find<CodeController>().setSelectedCode(codeRx.value, extra: 3);
       },
       style: buttonTheme,
+      child: const Text(
+        'action',
+        style: buttonTextTheme,
+      ),
     );
   }
 }

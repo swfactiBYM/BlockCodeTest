@@ -29,8 +29,6 @@ Map<PlayerState?, Vector2> dirVec = {
   null: Vector2(0, 1),
 };
 
-List<String> wallString = ['1', '3'];
-
 class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     with HasGameRef<TheGame> {
   PlayerSprite({
@@ -39,11 +37,11 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
   }) : initPosition = initialPosition ?? Vector2(0, 0);
 
   /// Normal Scale
-  static final unflippedScale = Vector2.all(MapManager.scaleFactor.toDouble());
+  late Vector2 unflippedScale = Vector2.all(gameRef.map.scaleFactor.toDouble());
 
   /// Flipped Scale for [PlayeyrState.left] and [PlayerState.leftMoving]
-  static final flippedScale = Vector2(
-      -MapManager.scaleFactor.toDouble(), MapManager.scaleFactor.toDouble());
+  late Vector2 flippedScale = Vector2(
+      -gameRef.map.scaleFactor.toDouble(), gameRef.map.scaleFactor.toDouble());
 
   /// Initial position of the player
   Vector2 initPosition;
@@ -70,7 +68,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     scale = unflippedScale;
     pivotPos = (gameRef.map.size - Vector2.all(1)) *
         10 *
-        MapManager.scaleFactor.toDouble();
+        gameRef.map.scaleFactor.toDouble();
     reset();
     _loadSprites();
   }
@@ -82,12 +80,12 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
       current == PlayerState.leftMoving ||
       current == PlayerState.rightMoving;
 
-  bool get isMovingIntoWall => wallString
-      .contains(gameRef.map.map[destPos.y.toInt()][destPos.x.toInt()]);
+  bool get isMovingIntoWall =>
+      MapManager.wallString.contains(gameRef.map.getElement(destPos));
 
   /// Check if player is inside of wall
   bool get isInWall =>
-      wallString.contains(gameRef.map.map[relPos.y.round()][relPos.x.round()]);
+      MapManager.wallString.contains(gameRef.map.getElement(relPos));
 
   /// Check if player is outside of map
   bool get isOutOfBounds =>
@@ -177,8 +175,12 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
     /// calculate actual position of player
     position = superPos -
         pivotPos +
-        relPos * 20 * MapManager.scaleFactor.toDouble() +
-        Vector2(0, -4.0 * MapManager.scaleFactor);
+        relPos * 20 * gameRef.map.scaleFactor.toDouble() +
+        Vector2(0, -4.0 * gameRef.map.scaleFactor);
+
+    // if (isInWall) {
+    //   throw PlayerErrorException('Moved in to wall');
+    // }
 
     super.update(dt);
   }
@@ -188,6 +190,9 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
   /// sets [destPos] according to player direction
   void move() {
     destPos += dirVec[current]!;
+    if (isMovingIntoWall) {
+      throw PlayerErrorException('Moving into wall');
+    }
   }
 
   /// turn player direction
@@ -237,8 +242,8 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
   /// Pick up item from map
   void pickUpItem() {
     if (!isOutOfBounds &&
-        gameRef.map.map[relPos.y.round()][relPos.x.round()] == '2') {
-      gameRef.map.setElement(relPos.x.round(), relPos.y.round(), '0');
+        gameRef.map.map[relPos.y.round()][relPos.x.round()] == 'I') {
+      gameRef.map.setElement(relPos, '0');
       inventory++;
     } else {
       throw PlayerErrorException('Failed to pick up item');
@@ -248,7 +253,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
   /// Put down item on map
   void putDownItem() {
     if (inventory > 0 && !isOutOfBounds) {
-      gameRef.map.setElement(relPos.x.round(), relPos.y.round(), '2');
+      gameRef.map.setElement(relPos, 'I');
       inventory--;
     } else {
       throw PlayerErrorException('Failed to put down item');
@@ -261,7 +266,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
   /// Check if player is standing on item
   bool isOnItem() =>
       !isOutOfBounds &&
-      gameRef.map.map[relPos.y.round()][relPos.x.round()] == '2';
+      gameRef.map.map[relPos.y.round()][relPos.x.round()] == 'I';
 
   bool isOnDestination() =>
       !isOutOfBounds && gameRef.map.destination == destPos;
@@ -270,20 +275,47 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
 
   bool frontIsWall() {
     final pos = destPos + dirVec[current]!;
-    return gameRef.map.map[pos.y.toInt()][pos.x.toInt()] == '1';
+    return MapManager.wallString.contains(gameRef.map.getElement(pos));
   }
 
   bool frontIsObstacle() {
     final pos = destPos + dirVec[current]!;
-    return gameRef.map.map[pos.y.toInt()][pos.x.toInt()] == '3';
+    return gameRef.map.getElement(pos) == 'B';
+  }
+
+  bool frontIsPushable() {
+    final pos = destPos + dirVec[current]!;
+    return gameRef.map.getElement(pos) == 'P';
+  }
+
+  bool isOnLever() {
+    return gameRef.map.getElement(destPos) == 'L';
   }
 
   void destroyObstacle() {
     final pos = destPos + dirVec[current]!;
-    if (gameRef.map.map[pos.y.toInt()][pos.x.toInt()] == '3') {
-      gameRef.map.setElement(pos.x.toInt(), pos.y.toInt(), '4');
+    if (gameRef.map.getElement(pos) == 'B') {
+      gameRef.map.setElement(pos, 'b');
     } else {
       throw PlayerErrorException('Failed to chop wood');
+    }
+  }
+
+  void pushPushable() {
+    final pos = destPos + dirVec[current]!;
+    final obj = gameRef.map.getPushable(pos);
+    if (obj == null) {
+      throw PlayerErrorException('Failed to push');
+    }
+    obj.push(dirVec[current]!);
+  }
+
+  void pullLever() {
+    if (isOnLever()) {
+      gameRef.map.setElement(destPos, 'l');
+      for (int i = 0; i < gameRef.map.height; i++) {
+        gameRef.map.map[i] = gameRef.map.map[i].replaceAll(RegExp(r'T'), 't');
+      }
     }
   }
 

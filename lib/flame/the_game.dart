@@ -71,14 +71,15 @@ class TheGame extends FlameGame {
 
   void resetgame() {
     map.changeMap([
-      "1111111",
-      "1000301",
-      "1200021",
-      "1300031",
-      "1000001",
-      "1020301",
-      "1111111",
+      "WWWWWWW",
+      "W000B0W",
+      "WI000IW",
+      "WB000BW",
+      "W0PTT0W",
+      "W0ILB0W",
+      "WWWWWWW",
     ]);
+    map.resetPushable();
     player.reset();
   }
 

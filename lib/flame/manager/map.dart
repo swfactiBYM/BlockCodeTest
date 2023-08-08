@@ -1,21 +1,32 @@
+import 'dart:async';
+
 import 'package:flame/components.dart';
 import 'package:ui_test/flame/the_game.dart';
+
+import '../sprites/moveable.dart';
 
 class MapManager extends Component with HasGameRef<TheGame> {
   /// Map objects
   ///
-  /// - 1 wall
-  /// - 2 item
+  /// - W wall
+  /// - I item
   /// - 0 air
+  /// - B breakable
+  /// - P pushable
+  /// - T transformable
+  /// - L lever
   List<String> map = [
-    "1111111",
-    "1000301",
-    "1200021",
-    "1300031",
-    "1000001",
-    "1020301",
-    "1111111",
+    "WWWWWWW",
+    "W000B0W",
+    "WI000IW",
+    "WB000BW",
+    "W0PTT0W",
+    "W0ILB0W",
+    "WWWWWWW",
   ];
+
+  final List<MovableSprite> pushables = [];
+
   int get width => map[0].length;
   int get height => map.length;
   Vector2 get size => Vector2(width.toDouble(), height.toDouble());
@@ -27,7 +38,12 @@ class MapManager extends Component with HasGameRef<TheGame> {
   Vector2 destination = Vector2(2, 1);
 
   /// Sprite scale
-  static const int scaleFactor = 3;
+  int scaleFactor = 3;
+
+  static const List<String> wallString = ['W', 'B', 'P', 'T'];
+
+  @override
+  FutureOr<void> onLoad() {}
 
   /// Change map
   void changeMap(List<String> newMap) {
@@ -36,10 +52,14 @@ class MapManager extends Component with HasGameRef<TheGame> {
   }
 
   /// Set map element
-  void setElement(int x, int y, String element) {
-    final l = map[y].substring(0, x);
-    final r = map[y].substring(x + 1);
-    map[y] = '$l$element$r';
+  void setElement(Vector2 pos, String element) {
+    final l = map[pos.y.round()].substring(0, pos.x.round());
+    final r = map[pos.y.round()].substring(pos.x.round() + 1);
+    map[pos.y.round()] = '$l$element$r';
+  }
+
+  String getElement(Vector2 pos) {
+    return map[pos.y.round()][pos.x.round()];
   }
 
   /// Check if game is cleared
@@ -62,5 +82,16 @@ class MapManager extends Component with HasGameRef<TheGame> {
 
     // print('$mapSuccess $invSuccess $destSuccess');
     return mapSuccess && invSuccess && destSuccess;
+  }
+
+  MovableSprite? getPushable(Vector2 pos) {
+    final iter = pushables.where((element) => element.destPos == pos);
+    return iter.isNotEmpty ? iter.first : null;
+  }
+
+  void resetPushable() {
+    for (final push in pushables) {
+      push.reset();
+    }
   }
 }
