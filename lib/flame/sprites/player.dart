@@ -81,11 +81,13 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
       current == PlayerState.rightMoving;
 
   bool get isMovingIntoWall =>
-      MapManager.wallString.contains(gameRef.map.getElement(destPos));
+      MapManager.wallString.contains(gameRef.map.getElement(destPos)) ||
+      gameRef.map.getPushable(destPos) != null;
 
   /// Check if player is inside of wall
   bool get isInWall =>
-      MapManager.wallString.contains(gameRef.map.getElement(relPos));
+      MapManager.wallString.contains(gameRef.map.getElement(relPos)) ||
+      gameRef.map.getPushable(relPos) != null;
 
   /// Check if player is outside of map
   bool get isOutOfBounds =>
@@ -275,7 +277,8 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
 
   bool frontIsWall() {
     final pos = destPos + dirVec[current]!;
-    return MapManager.wallString.contains(gameRef.map.getElement(pos));
+    return MapManager.wallString.contains(gameRef.map.getElement(pos)) ||
+        frontIsPushable();
   }
 
   bool frontIsObstacle() {
@@ -285,7 +288,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
 
   bool frontIsPushable() {
     final pos = destPos + dirVec[current]!;
-    return gameRef.map.getElement(pos) == 'P';
+    return gameRef.map.getPushable(pos) != null;
   }
 
   bool isOnLever() {

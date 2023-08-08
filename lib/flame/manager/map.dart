@@ -40,7 +40,7 @@ class MapManager extends Component with HasGameRef<TheGame> {
   /// Sprite scale
   int scaleFactor = 3;
 
-  static const List<String> wallString = ['W', 'B', 'P', 'T'];
+  static const List<String> wallString = ['W', 'B', 'T'];
 
   @override
   FutureOr<void> onLoad() {}

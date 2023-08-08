@@ -42,6 +42,7 @@ class Background extends CustomPainterComponent with HasGameRef<TheGame> {
             superPos: pos.xy,
             initialPos: Vector2(j.toDouble(), i.toDouble()),
           );
+          gameRef.map.setElement(Vector2(j.toDouble(), i.toDouble()), '0');
           gameRef.map.pushables.add(obj);
           gameRef.add(obj);
         }

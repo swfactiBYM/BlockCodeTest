@@ -64,11 +64,6 @@ class MovableSprite extends SpriteComponent with HasGameRef<TheGame> {
         relPos.y += 2 * dt;
       }
     }
-
-    if (relPos == destPos) {
-      gameRef.map.setElement(destPos, '5');
-    }
-
     position = superPos -
         pivotPos +
         relPos * 20 * gameRef.map.scaleFactor.toDouble() +
@@ -88,7 +83,6 @@ class MovableSprite extends SpriteComponent with HasGameRef<TheGame> {
       destPos = destPos - offset;
       throw ObjectErrorException('Push error');
     }
-    gameRef.map.setElement(relPos, '0');
   }
 
   Future<void> _loadSprites() async {
