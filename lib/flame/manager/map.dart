@@ -38,7 +38,7 @@ class MapManager extends Component with HasGameRef<TheGame> {
   Vector2 destination = Vector2(2, 1);
 
   /// Sprite scale
-  int scaleFactor = 3;
+  double scaleFactor = 3;
 
   static const List<String> wallString = ['W', 'B', 'T'];
 

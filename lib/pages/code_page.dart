@@ -71,7 +71,7 @@ class CodePage extends StatelessWidget {
                 child: Obx(
                   () => codeController.extra.value != 1
                       ? codeController.isOnFuncDef.value &&
-                              codeController.extra.value != 2
+                              codeController.extra.value == 0
                           ? functionFunctions()
                           : normalFunctions()
                       : contitionFunctions(),

@@ -81,10 +81,10 @@ class TheGame extends FlameGame {
     // print('${size.x} ${map.width * 20}');
     // print('${size.x / (map.width * 20)}');
 
-    rescale(min(max((size.x / (map.width * 20)).floor() - 1, 1), 3));
+    rescale(min(max((size.x / (map.width * 20)) - 1, 0.5), 3));
   }
 
-  void rescale(int scale) {
+  void rescale(double scale) {
     backdrop.size = size;
     map.scaleFactor = scale;
     player.rescale();
