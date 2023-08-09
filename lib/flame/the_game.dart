@@ -38,9 +38,6 @@ class TheGame extends FlameGame {
     );
     add(player);
 
-    overlays.add('startButton');
-    overlays.add('resetButton');
-
     calScale();
   }
 
