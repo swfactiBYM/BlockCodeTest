@@ -7,8 +7,9 @@ import 'package:ui_test/code_widget/code_widget_builder.dart';
 
 class WhileCodeWidget extends StatelessWidget {
   final Rx<WhileCodeModel> codeRx;
+  final RxBool isTargeted = false.obs;
 
-  const WhileCodeWidget({super.key, required this.codeRx});
+  WhileCodeWidget({super.key, required this.codeRx});
 
   @override
   Widget build(BuildContext context) {
@@ -17,33 +18,67 @@ class WhileCodeWidget extends StatelessWidget {
         InkWell(
           onTap: () => Get.find<CodeController>()
               .setSelectedCode(codeRx.value, extra: 0),
-          child: Obx(
-            () => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text("while ("),
-                    conditionButton(codeRx.value.condition),
-                    Text(") {"),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (final code in codeRx.value.subCode)
-                          CodeWidgetBuilder.codeWidget(code),
-                        subCodeButton(),
-                      ],
-                    )
-                  ],
-                ),
-                Text("}"),
-              ],
+          child: LongPressDraggable<CodeModel>(
+            data: codeRx.value,
+            feedback: const Text("while", style: buttonTextTheme),
+            childWhenDragging: Text("----"),
+            child: Obx(
+              () => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text("while ("),
+                      conditionButton(codeRx.value.condition),
+                      Text(") {"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (final code in codeRx.value.subCode)
+                            CodeWidgetBuilder.codeWidget(code),
+                          subCodeButton(),
+                        ],
+                      )
+                    ],
+                  ),
+                  Text("}"),
+                ],
+              ),
             ),
+          ),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: DragTarget<CodeModel>(
+            builder: (context, candidate, reject) {
+              return Obx(() => Container(
+                    color: isTargeted.value ? Colors.blue : Colors.transparent,
+                    height: 10,
+                  ));
+            },
+            onAccept: (model) {
+              isTargeted.value = false;
+              final codeController = Get.find<CodeController>();
+              codeController.moveCode(codeRx.value, model);
+            },
+            onWillAccept: (model) {
+              return model != codeRx.value && model is! FunctionCodeModel;
+            },
+            onMove: (detail) {
+              if (detail.data != codeRx.value) {
+                isTargeted.value = true;
+              }
+            },
+            onLeave: (data) {
+              isTargeted.value = false;
+            },
           ),
         ),
       ],

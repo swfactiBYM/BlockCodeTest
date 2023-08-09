@@ -1,0 +1,30 @@
+{
+    "map": [
+        "WWWWWWWWWWWWWWW",
+        "W0000000000000W",
+        "WWWWWWWWWWWWW0W",
+        "WWP0P00IWP0P00W",
+        "WW0P0PW0W0P0PTW",
+        "WLP0P0W00P0P0TW",
+        "WW0P0PW0W0P0PTW",
+        "WWWWWWWWWWWWWTW",
+        "WWP0P00IWP0P00W",
+        "WW0P0PW0W0P0PWW",
+        "WTP0P0W00P0P0WW",
+        "WT0P0PW0W0P0PWW",
+        "WTWWWWWWWWWWWWW",
+        "W0000000000000W",
+        "WWWWWWWWWWWWWWW"
+    ],
+    "initialPosition": {
+        "x": 1,
+        "y": 1
+    },
+    "destination": {
+        "x": 13,
+        "y": 13
+    },
+    "objective": {
+        "inventory": 2
+    }
+}

@@ -11,6 +11,7 @@ import 'package:ui_test/flame/the_game.dart';
 class CodePage extends StatelessWidget {
   final codeController = Get.put(CodeController());
   final gameController = Get.put(GameController(TheGame()));
+  final duration = const Duration(milliseconds: 100);
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +150,7 @@ class CodePage extends StatelessWidget {
                     "move();",
                     callback: () async {
                       gameController.game.player.move();
-                      await Future.delayed(const Duration(milliseconds: 500));
+                      await Future.delayed(duration);
                     },
                   ));
                 },
@@ -161,7 +162,7 @@ class CodePage extends StatelessWidget {
                     "pickUpClam();",
                     callback: () async {
                       gameController.game.player.pickUpItem();
-                      await Future.delayed(const Duration(milliseconds: 500));
+                      await Future.delayed(duration);
                     },
                   ));
                 },
@@ -173,31 +174,31 @@ class CodePage extends StatelessWidget {
                     "putDownClam();",
                     callback: () async {
                       gameController.game.player.putDownItem();
-                      await Future.delayed(const Duration(milliseconds: 500));
+                      await Future.delayed(duration);
                     },
                   ));
                 },
               ),
               ListTile(
-                title: Text('turnRight()'),
+                title: Text('turnAntiClockwise()'),
                 onTap: () {
                   codeController.addCode(CodeModel(
-                    "turnRight();",
+                    "turnAntiClockwise();",
                     callback: () async {
                       gameController.game.player.turnRight();
-                      await Future.delayed(const Duration(milliseconds: 500));
+                      await Future.delayed(duration);
                     },
                   ));
                 },
               ),
               ListTile(
-                title: Text('turnLeft()'),
+                title: Text('turnClockwise()'),
                 onTap: () {
                   codeController.addCode(CodeModel(
-                    "turnLeft();",
+                    "turnClockwise();",
                     callback: () async {
                       gameController.game.player.turnLeft();
-                      await Future.delayed(const Duration(milliseconds: 500));
+                      await Future.delayed(duration);
                     },
                   ));
                 },
@@ -209,7 +210,7 @@ class CodePage extends StatelessWidget {
                     "destoryThorns();",
                     callback: () async {
                       gameController.game.player.destroyObstacle();
-                      await Future.delayed(const Duration(milliseconds: 500));
+                      await Future.delayed(duration);
                     },
                   ));
                 },
@@ -221,7 +222,7 @@ class CodePage extends StatelessWidget {
                     "pushMushroom();",
                     callback: () async {
                       gameController.game.player.pushPushable();
-                      await Future.delayed(const Duration(milliseconds: 500));
+                      await Future.delayed(duration);
                     },
                   ));
                 },
@@ -233,7 +234,7 @@ class CodePage extends StatelessWidget {
                     "pullLever();",
                     callback: () async {
                       gameController.game.player.pullLever();
-                      await Future.delayed(const Duration(milliseconds: 500));
+                      await Future.delayed(duration);
                     },
                   ));
                 },

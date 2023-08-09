@@ -134,6 +134,40 @@ class CodeController extends GetxController {
     }
   }
 
+  /// 코드 이동
+  ///
+  /// [ori]는 옮길 위치의 코드</br>
+  /// [tar]은 옮길 코드</br>
+  /// [ori.parent]에 [tar]을 삽입
+  void moveCode(CodeModel ori, CodeModel tar) {
+    selectedCode.value = tar;
+    removeRequest();
+    if (ori.parent == null) {
+      if (mainCode.contains(ori)) {
+        mainCode.insert(mainCode.indexOf(ori) + 1, tar);
+        tar.parent = null;
+      } else if (funcDefCode.contains(ori)) {
+        funcDefCode.insert(funcDefCode.indexOf(ori) + 1, tar);
+        tar.parent = null;
+      }
+    } else {
+      final parent = ori.parent;
+      if (parent is IfCodeModel) {
+        if (parent.ifCode.contains(ori)) {
+          parent.insertIfCode(tar, parent.ifCode.indexOf(ori) + 1);
+        } else if (parent.elseCode.contains(ori)) {
+          parent.insertElseCode(tar, parent.elseCode.indexOf(ori) + 1);
+        }
+      } else if (parent is HasSubCode) {
+        final par = parent as HasSubCode;
+        par.insertAt(tar, par.subCode.indexOf(ori) + 1);
+      }
+    }
+
+    mainCode.refresh();
+    funcDefCode.refresh();
+  }
+
   /// 코드 실행
   ///
   /// [mainCode]내의 모든 코드의 [CodeModel.callback] 함수 실행

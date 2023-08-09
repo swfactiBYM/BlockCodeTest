@@ -15,6 +15,8 @@ class MovableSprite extends SpriteComponent with HasGameRef<TheGame> {
 
   late Vector2 pivotPos;
 
+  static const speed = 10;
+
   MovableSprite({
     required this.superPos,
     Vector2? initialPos,
@@ -68,15 +70,15 @@ class MovableSprite extends SpriteComponent with HasGameRef<TheGame> {
       }
 
       if (relPos.x > destPos.x) {
-        relPos.x -= 2 * dt;
+        relPos.x -= speed * dt;
       } else if (relPos.x < destPos.x) {
-        relPos.x += 2 * dt;
+        relPos.x += speed * dt;
       }
 
       if (relPos.y > destPos.y) {
-        relPos.y -= 2 * dt;
+        relPos.y -= speed * dt;
       } else if (relPos.y < destPos.y) {
-        relPos.y += 2 * dt;
+        relPos.y += speed * dt;
       }
     }
     position = superPos -

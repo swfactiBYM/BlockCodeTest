@@ -15,6 +15,11 @@ class CodeModel {
 
   CodeModel(this.code, {this.callback});
 
+  /// 조상 코드
+  ///
+  /// [null]일 경우에는 [CodeController.mainCode] 또는 [CodeController.funcDefCode]에 존재
+  CodeModel? parent;
+
   /// 코드
   String getCode() {
     return code;
@@ -32,8 +37,11 @@ class PlaceHolderCodeModel extends CodeModel {
 class HasSubCode {
   void addSubCode(CodeModel code) {}
   void removeSubCode(CodeModel? code) {}
+  void insertAt(CodeModel code, int index) {}
+  List<CodeModel> get subCode => [];
 }
 
+/// 내부에 조건문을 가지고 있는 코드들(if, while) 을 위한 interface
 class HasCheck {
   /// 조건문 String
   String? condition;
@@ -90,9 +98,32 @@ class IfCodeModel extends CodeModel implements HasSubCode, HasCheck {
 
   /// 외부용 함수들
   List<CodeModel> get ifCode => _ifCode;
-  void addIfCode(CodeModel code) => _ifCode.add(code);
+
+  /// 코드 추가
+  void addIfCode(CodeModel code) {
+    _ifCode.add(code);
+    code.parent = this;
+  }
+
+  /// 특정 위치에 코드 삽입
+  void insertIfCode(CodeModel code, int index) {
+    _ifCode.insert(index, code);
+    code.parent = this;
+  }
+
   List<CodeModel> get elseCode => _elseCode;
-  void addElseCode(CodeModel code) => _elseCode.add(code);
+
+  /// 코드 추가
+  void addElseCode(CodeModel code) {
+    _elseCode.add(code);
+    code.parent = this;
+  }
+
+  /// 특정 위치에 코드 삽입
+  void insertElseCode(CodeModel code, int index) {
+    _elseCode.insert(index, code);
+    code.parent = this;
+  }
 
   /// 내부코드 삭제용 함수, [HasSubCode] 에서 inherit
   @override
@@ -129,8 +160,17 @@ $elC
 }''';
   }
 
+  /// if 에선 안씀
   @override
-  void addSubCode(CodeModel code) {}
+  void addSubCode(CodeModel code) => throw UnimplementedError();
+
+  /// if 에선 안씀
+  @override
+  void insertAt(CodeModel code, int index) => throw UnimplementedError();
+
+  /// if 에선 안씀
+  @override
+  List<CodeModel> get subCode => throw UnimplementedError();
 }
 
 /// for Code
@@ -144,9 +184,20 @@ class ForCodeModel extends CodeModel implements HasSubCode {
   ForCodeModel(this.iterCount) : super("for");
 
   /// 외부용 함수
+  @override
   List<CodeModel> get subCode => _subCode;
   @override
-  void addSubCode(CodeModel code) => _subCode.add(code);
+  void addSubCode(CodeModel code) {
+    _subCode.add(code);
+    code.parent = this;
+  }
+
+  /// 특정 위치에 삽입
+  @override
+  void insertAt(CodeModel code, int index) {
+    _subCode.insert(index, code);
+    code.parent = this;
+  }
 
   /// 내부코드 삭제용 함수, [HasSubCode] 에서 inherit
   @override
@@ -197,9 +248,20 @@ class WhileCodeModel extends CodeModel implements HasSubCode, HasCheck {
   WhileCodeModel() : super("while");
 
   /// 외부용 함수
+  @override
   List<CodeModel> get subCode => _subCode;
   @override
-  void addSubCode(CodeModel code) => _subCode.add(code);
+  void addSubCode(CodeModel code) {
+    _subCode.add(code);
+    code.parent = this;
+  }
+
+  /// 특정 위치에 삽입
+  @override
+  void insertAt(CodeModel code, int index) {
+    subCode.insert(index, code);
+    code.parent = this;
+  }
 
   /// 내부코드 삭제용 함수, [HasSubCode] 에서 inherit
   @override
@@ -218,11 +280,13 @@ class WhileCodeModel extends CodeModel implements HasSubCode, HasCheck {
 
   /// 실행시 호출되는 callback함수
   ///
-  /// [iterCount]만큼 [_subCode] 내의 모든 코드의 [callback] 실행
+  /// [check]가 [true]일 동안 [_subCode] 내의 모든 코드의 [callback] 실행
   @override
   Future<void> Function()? get callback => () async {
         if (check == null) return;
-        while (check!()) {
+        while (check!() &&
+            !gameController.isError &&
+            gameController.isGameRunning.isTrue) {
           for (final subC in subCode) {
             if (gameController.isError ||
                 gameController.isGameRunning.isFalse) {
@@ -257,9 +321,20 @@ class FunctionCodeModel extends CodeModel implements HasSubCode {
   FunctionCodeModel(this.name) : super(name);
 
   /// 외부용 함수
+  @override
   List<CodeModel> get subCode => _subCode;
   @override
-  void addSubCode(CodeModel code) => _subCode.add(code);
+  void addSubCode(CodeModel code) {
+    _subCode.add(code);
+    code.parent = this;
+  }
+
+  /// 특정 위치에 삽입
+  @override
+  void insertAt(CodeModel code, int index) {
+    subCode.insert(index, code);
+    code.parent = this;
+  }
 
   /// 내부코드 삭제용 함수, [HasSubCode] 에서 inherit
   @override

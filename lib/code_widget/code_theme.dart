@@ -17,6 +17,7 @@ const buttonTextTheme = TextStyle(
   color: Colors.black,
   fontWeight: FontWeight.normal,
   fontSize: 15,
+  decoration: TextDecoration.none,
 );
 
 final textInputTheme = InputDecoration(

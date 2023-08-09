@@ -80,7 +80,7 @@ class GameController extends GetxController {
   }
 
   Future<void> loadJson() async {
-    final str = await rootBundle.loadString('assets/json/map2.json');
+    final str = await rootBundle.loadString('assets/json/ch6_ls1.json');
     gameData = await jsonDecode(str);
   }
 }
