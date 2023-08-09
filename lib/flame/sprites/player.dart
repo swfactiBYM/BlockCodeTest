@@ -53,10 +53,10 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
   Vector2 destPos = Vector2(0, 0);
 
   /// position of background
-  final Vector2 superPos;
+  late Vector2 superPos;
 
   /// position of top left corner
-  late final Vector2 pivotPos;
+  late Vector2 pivotPos;
 
   /// items picked up
   int inventory = 0;
@@ -71,6 +71,17 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
         gameRef.map.scaleFactor.toDouble();
     reset();
     _loadSprites();
+  }
+
+  void rescale() {
+    superPos = Vector2(gameRef.size.x / 2, gameRef.size.y / 2);
+    pivotPos = (gameRef.map.size - Vector2.all(1)) *
+        10 *
+        gameRef.map.scaleFactor.toDouble();
+    unflippedScale = Vector2.all(gameRef.map.scaleFactor.toDouble());
+    flippedScale = Vector2(-gameRef.map.scaleFactor.toDouble(),
+        gameRef.map.scaleFactor.toDouble());
+    scale = unflippedScale;
   }
 
   /// Check if player is moving
@@ -277,8 +288,7 @@ class PlayerSprite extends SpriteAnimationGroupComponent<PlayerState>
 
   bool frontIsWall() {
     final pos = destPos + dirVec[current]!;
-    return MapManager.wallString.contains(gameRef.map.getElement(pos)) ||
-        frontIsPushable();
+    return gameRef.map.getElement(pos) == 'W';
   }
 
   bool frontIsObstacle() {

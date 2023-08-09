@@ -94,4 +94,10 @@ class MapManager extends Component with HasGameRef<TheGame> {
       push.reset();
     }
   }
+
+  void rescalePushable() {
+    for (final push in pushables) {
+      push.rescale();
+    }
+  }
 }

@@ -13,7 +13,7 @@ class MovableSprite extends SpriteComponent with HasGameRef<TheGame> {
 
   Vector2 superPos;
 
-  late final Vector2 pivotPos;
+  late Vector2 pivotPos;
 
   MovableSprite({
     required this.superPos,
@@ -45,6 +45,14 @@ class MovableSprite extends SpriteComponent with HasGameRef<TheGame> {
     await _loadSprites();
   }
 
+  void rescale() {
+    superPos = Vector2(gameRef.size.x / 2, gameRef.size.y / 2);
+    pivotPos = (gameRef.map.size - Vector2.all(1)) *
+        10 *
+        gameRef.map.scaleFactor.toDouble();
+    scale = Vector2.all(gameRef.map.scaleFactor.toDouble());
+  }
+
   @override
   void update(double dt) {
     if (relPos != destPos && !isOutOfBounds && !isInWall) {
@@ -73,6 +81,7 @@ class MovableSprite extends SpriteComponent with HasGameRef<TheGame> {
   }
 
   void reset() {
+    scale = Vector2.all(gameRef.map.scaleFactor.toDouble());
     relPos = initPosition.xy;
     destPos = initPosition.xy;
   }

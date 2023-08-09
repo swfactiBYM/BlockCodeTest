@@ -80,28 +80,37 @@ class CodePage extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: GameWidget.controlled(
-            gameFactory: () => gameController.game,
-            overlayBuilderMap: <String, Widget Function(BuildContext, Game)>{
-              'startButton': (context, game) => Positioned(
-                    top: context.height * 0.75,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        gameController.startGame();
-                      },
-                      child: Text('START'),
-                    ),
-                  ),
-              'resetButton': (context, game) => Positioned(
-                    top: context.height * 0.8,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        gameController.resetGame();
-                      },
-                      child: Text('Reset'),
-                    ),
-                  ),
+          child: NotificationListener<SizeChangedLayoutNotification>(
+            onNotification: (notif) {
+              gameController.game.calScale();
+              return true;
             },
+            child: SizeChangedLayoutNotifier(
+              child: GameWidget.controlled(
+                gameFactory: () => gameController.game,
+                overlayBuilderMap: <String,
+                    Widget Function(BuildContext, Game)>{
+                  'startButton': (context, game) => Positioned(
+                        top: context.height * 0.75,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            gameController.startGame();
+                          },
+                          child: Text('START'),
+                        ),
+                      ),
+                  'resetButton': (context, game) => Positioned(
+                        top: context.height * 0.8,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            gameController.resetGame();
+                          },
+                          child: Text('Reset'),
+                        ),
+                      ),
+                },
+              ),
+            ),
           ),
         )
       ]),

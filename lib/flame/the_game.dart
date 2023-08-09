@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -11,6 +12,7 @@ class TheGame extends FlameGame {
   MapManager map = MapManager();
   late PlayerSprite player;
   late RectangleComponent backdrop;
+  late Background background;
 
   @override
   Future<void> onLoad() async {
@@ -25,7 +27,8 @@ class TheGame extends FlameGame {
     );
     add(backdrop);
 
-    add(Background(pos));
+    background = Background(pos);
+    add(background);
 
     player = PlayerSprite(
       superPos: pos.xy,
@@ -35,6 +38,8 @@ class TheGame extends FlameGame {
 
     overlays.add('startButton');
     overlays.add('resetButton');
+
+    calScale();
   }
 
   void startGame() {
@@ -67,6 +72,22 @@ class TheGame extends FlameGame {
         }
       }
     });
+  }
+
+  void calScale() {
+    // if(size.x  map.width * 20);
+    // print('${size.x} ${map.width * 20}');
+    // print('${size.x / (map.width * 20)}');
+
+    rescale(min(max((size.x / (map.width * 20)).floor() - 1, 1), 3));
+  }
+
+  void rescale(int scale) {
+    backdrop.size = size;
+    map.scaleFactor = scale;
+    player.rescale();
+    background.rescale();
+    map.rescalePushable();
   }
 
   void resetgame() {

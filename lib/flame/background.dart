@@ -49,6 +49,11 @@ class Background extends CustomPainterComponent with HasGameRef<TheGame> {
       }
     }
   }
+
+  void rescale() {
+    position = Vector2(gameRef.size.x / 2, gameRef.size.y / 2);
+    scale = Vector2.all(gameRef.map.scaleFactor.toDouble());
+  }
 }
 
 class BackgroundPainter extends CustomPainter {
@@ -89,6 +94,7 @@ class BackgroundPainter extends CustomPainter {
         if (map[j][i] == '0') continue;
         var src = Rect.zero;
         var dst = Rect.zero;
+
         if (map[j][i] == 'W') {
           src = Rect.fromLTWH(ri * 20 + 40, rj * 20, 20, 20);
           dst = Rect.fromLTWH(i * 20.0, (j * 20.0 - 4.0), 20.0, 20.0);
