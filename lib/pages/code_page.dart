@@ -83,7 +83,7 @@ class CodePage extends StatelessWidget {
           child: NotificationListener<SizeChangedLayoutNotification>(
             onNotification: (notif) {
               gameController.game.calScale();
-              return true;
+              return false;
             },
             child: SizeChangedLayoutNotifier(
               child: GameWidget.controlled(

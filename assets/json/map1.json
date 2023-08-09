@@ -1,0 +1,22 @@
+{
+    "map": [
+        "WWWWWWWW",
+        "W00000IW",
+        "WI00000W",
+        "WB00000W",
+        "W00000BW",
+        "W0B0I00W",
+        "WWWWWWWW"
+    ],
+    "initialPosition": {
+        "x": 1,
+        "y": 1
+    },
+    "destination": {
+        "x": 2,
+        "y": 1
+    },
+    "objective": {
+        "inventory": 3
+    }
+}

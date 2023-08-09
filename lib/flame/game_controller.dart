@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ui_test/code_model/code_control.dart';
 import 'package:ui_test/flame/the_game.dart';
@@ -11,7 +14,18 @@ class GameController extends GetxController {
   RxBool isGameRunning = false.obs;
   RxBool isCleared = false.obs;
 
+  late Map<String, dynamic> gameData;
+
   GameController(this.game);
+
+  @override
+  void onInit() async {
+    await loadJson();
+    game.map.loadData(gameData);
+    game.resetgame();
+    game.calScale();
+    super.onInit();
+  }
 
   bool get isError => game.player.isInWall || game.player.isOutOfBounds;
 
@@ -29,7 +43,7 @@ class GameController extends GetxController {
       //   "1000001",
       //   "1111111",
       // ],
-      inventoryCount: 3,
+      inventoryCount: gameData['objective']?['inventory'],
     );
     // print(isCleared.value);
     /// 강제 종료 여부 체크
@@ -63,5 +77,10 @@ class GameController extends GetxController {
     } else {
       game.setColor(Colors.yellow);
     }
+  }
+
+  Future<void> loadJson() async {
+    final str = await rootBundle.loadString('assets/json/map2.json');
+    gameData = await jsonDecode(str);
   }
 }

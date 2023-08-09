@@ -4,7 +4,9 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ui_test/flame/background.dart';
+import 'package:ui_test/flame/game_controller.dart';
 import 'package:ui_test/flame/manager/map.dart';
 import 'package:ui_test/flame/sprites/player.dart';
 
@@ -91,15 +93,18 @@ class TheGame extends FlameGame {
   }
 
   void resetgame() {
-    map.changeMap([
-      "WWWWWWW",
-      "W000B0W",
-      "WI000IW",
-      "WB000BW",
-      "W0PTT0W",
-      "W0ILB0W",
-      "WWWWWWW",
-    ]);
+    final gmContrl = Get.find<GameController>();
+    // map.changeMap([
+    //   "WWWWWWW",
+    //   "W000B0W",
+    //   "WI000IW",
+    //   "WB000BW",
+    //   "W0PTT0W",
+    //   "W0ILB0W",
+    //   "WWWWWWW",
+    // ]);
+    map.changeMap(
+        (gmContrl.gameData['map'] as List).map((e) => e.toString()).toList());
     map.resetPushable();
     player.reset();
   }

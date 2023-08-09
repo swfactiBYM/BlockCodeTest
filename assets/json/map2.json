@@ -1,0 +1,18 @@
+{
+    "map": [
+        "WWWWWWWW",
+        "WW0P0000",
+        "WWP0P0WW",
+        "WW0P0PWW",
+        "W0P0P0WW",
+        "WWWWWWWW"
+    ],
+    "initialPosition": {
+        "x": 1,
+        "y": 4
+    },
+    "destination": {
+        "x": 7,
+        "y": 1
+    }
+}

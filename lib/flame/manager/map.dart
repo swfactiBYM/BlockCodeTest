@@ -45,6 +45,18 @@ class MapManager extends Component with HasGameRef<TheGame> {
   @override
   FutureOr<void> onLoad() {}
 
+  void loadData(Map<String, dynamic> data) {
+    map.clear();
+    map.addAll((data['map'] as List).map((str) => str.toString()));
+
+    final dst = data['destination'] as Map;
+    destination = Vector2(dst['x'], dst['y']);
+
+    final ini = data['initialPosition'] as Map;
+    initialPlayerPosition = Vector2(ini['x'], ini['y']);
+    gameRef.player.initPosition = initialPlayerPosition.xy;
+  }
+
   /// Change map
   void changeMap(List<String> newMap) {
     map.clear();

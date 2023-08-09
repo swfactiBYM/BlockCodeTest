@@ -20,11 +20,13 @@ class MovableSprite extends SpriteComponent with HasGameRef<TheGame> {
     Vector2? initialPos,
   }) : initPosition = initialPos ?? Vector2.zero();
 
-  bool get isMovingIntoWall => MapManager.wallString
-      .contains(gameRef.map.map[destPos.y.toInt()][destPos.x.toInt()]);
+  bool get isMovingIntoWall =>
+      MapManager.wallString.contains(gameRef.map.getElement(destPos)) ||
+      isPushable(destPos);
 
-  bool get isInWall => MapManager.wallString
-      .contains(gameRef.map.map[relPos.y.round()][relPos.x.round()]);
+  bool get isInWall =>
+      MapManager.wallString.contains(gameRef.map.getElement(relPos)) ||
+      isPushable(relPos);
 
   bool get isOutOfBounds =>
       relPos.y <= -0.5 ||
@@ -32,7 +34,12 @@ class MovableSprite extends SpriteComponent with HasGameRef<TheGame> {
       relPos.x <= -0.5 ||
       relPos.x >= gameRef.map.width - 0.5;
 
-  bool get isMoving => relPos.absoluteError(destPos) < 0.01;
+  bool get isMoving => relPos.absoluteError(destPos) > 0.01;
+
+  bool isPushable(Vector2 pos) {
+    return gameRef.map.getPushable(pos) != null &&
+        gameRef.map.getPushable(pos) != this;
+  }
 
   @override
   FutureOr<void> onLoad() async {
