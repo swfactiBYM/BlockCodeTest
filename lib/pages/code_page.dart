@@ -1,9 +1,9 @@
 import 'package:flame/game.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ui_test/code_model/code_control.dart';
 import 'package:ui_test/code_model/code_model.dart';
-import 'package:ui_test/code_widget/code_theme.dart';
 import 'package:ui_test/code_widget/code_widget_builder.dart';
 import 'package:ui_test/flame/game_controller.dart';
 import 'package:ui_test/flame/the_game.dart';
@@ -59,15 +59,11 @@ class _CodePageState extends State<CodePage> with TickerProviderStateMixin {
             color: Colors.black,
             child: mainFunctionTabBar(),
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                codeContainer(codeController.mainCode),
-                codeContainer(codeController.funcDefCode),
-              ],
-            ),
-          ),
+          Obx(() => Expanded(
+                child: codeController.isOnFuncDef.value == false
+                    ? codeContainer(codeController.mainCode)
+                    : codeContainer(codeController.funcDefCode),
+              )),
           Flexible(
             child: Obx(
               () => codeController.extra.value != 1
@@ -85,22 +81,65 @@ class _CodePageState extends State<CodePage> with TickerProviderStateMixin {
 
   // 탭바 부분
   Widget mainFunctionTabBar() {
-    return TabBar(
-      controller: _tabController,
-      tabs: const [
-        Tab(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Main',
-              style: TextStyle(color: Colors.white),
+    return Column(
+      children: [
+        SizedBox(
+          height: context.height * 0.035,
+          child: Container(
+            color: Colors.black,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: TextButton(
+                      onPressed: () {
+                        codeController.isOnFuncDef.value = false;
+                        codeController.clearSelectedCode();
+                      },
+                      child: const Text(
+                        'Main',
+                        style: TextStyle(color: Colors.white),
+                      )),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: TextButton(
+                      onPressed: () {
+                        codeController.isOnFuncDef.value = true;
+                        codeController.clearSelectedCode();
+                      },
+                      child: const Text(
+                        'Function',
+                        style: TextStyle(color: Colors.white),
+                      )),
+                )
+              ],
             ),
           ),
         ),
-        Tab(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text('Function', style: TextStyle(color: Colors.white)),
+        Obx(
+          () => Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: Container(
+                  height: context.height * 0.005,
+                  color: codeController.isOnFuncDef.value == false
+                      ? Colors.blue
+                      : Colors.black,
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  height: context.height * 0.005,
+                  color: codeController.isOnFuncDef.value == true
+                      ? Colors.blue
+                      : Colors.black,
+                ),
+              )
+            ],
           ),
         ),
       ],
@@ -229,179 +268,395 @@ class _CodePageState extends State<CodePage> with TickerProviderStateMixin {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      "Select a Code",
+                      'Select a command',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     IconButton(
                         onPressed: () {
                           codeController.removeRequest();
                         },
-                        icon: const Icon(Icons.delete))
+                        icon: const Icon(CupertinoIcons.delete))
                   ]),
             )),
         Flexible(
           child: ListView(
             children: [
-              ListTile(
-                title: const Text('move()'),
-                onTap: () {
-                  codeController.addCode(CodeModel(
-                    "move();",
-                    callback: () async {
-                      gameController.game.player.move();
-                      await Future.delayed(const Duration(milliseconds: 500));
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(CodeModel(
+                        "move();",
+                        callback: () async {
+                          gameController.game.player.move();
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                        },
+                      ));
                     },
-                  ));
-                },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'move()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text('pickUpClam()'),
-                onTap: () {
-                  codeController.addCode(CodeModel(
-                    "pickUpClam();",
-                    callback: () async {
-                      gameController.game.player.pickUpItem();
-                      await Future.delayed(const Duration(milliseconds: 500));
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(CodeModel(
+                        "pickUpClam();",
+                        callback: () async {
+                          gameController.game.player.pickUpItem();
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                        },
+                      ));
                     },
-                  ));
-                },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'pickUpClam()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text('putDownClam()'),
-                onTap: () {
-                  codeController.addCode(CodeModel(
-                    "putDownClam();",
-                    callback: () async {
-                      gameController.game.player.putDownItem();
-                      await Future.delayed(const Duration(milliseconds: 500));
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(CodeModel(
+                        "putDownClam();",
+                        callback: () async {
+                          gameController.game.player.putDownItem();
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                        },
+                      ));
                     },
-                  ));
-                },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'putDownClam()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text('turnRight()'),
-                onTap: () {
-                  codeController.addCode(CodeModel(
-                    "turnRight();",
-                    callback: () async {
-                      gameController.game.player.turnRight();
-                      await Future.delayed(const Duration(milliseconds: 500));
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(CodeModel(
+                        "turnRight();",
+                        callback: () async {
+                          gameController.game.player.turnRight();
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                        },
+                      ));
                     },
-                  ));
-                },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'turnRight()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text('turnLeft()'),
-                onTap: () {
-                  codeController.addCode(CodeModel(
-                    "turnLeft();",
-                    callback: () async {
-                      gameController.game.player.turnLeft();
-                      await Future.delayed(const Duration(milliseconds: 500));
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(CodeModel(
+                        "turnLeft();",
+                        callback: () async {
+                          gameController.game.player.turnLeft();
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                        },
+                      ));
                     },
-                  ));
-                },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'turnLeft()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text('destroyThorns()'),
-                onTap: () {
-                  codeController.addCode(CodeModel(
-                    "destoryThorns();",
-                    callback: () async {
-                      gameController.game.player.destroyObstacle();
-                      await Future.delayed(const Duration(milliseconds: 500));
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(CodeModel(
+                        "destoryThorns();",
+                        callback: () async {
+                          gameController.game.player.destroyObstacle();
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                        },
+                      ));
                     },
-                  ));
-                },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'destoryThorns()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text('pushMushroom()'),
-                onTap: () {
-                  codeController.addCode(CodeModel(
-                    "pushMushroom();",
-                    callback: () async {
-                      gameController.game.player.pushPushable();
-                      await Future.delayed(const Duration(milliseconds: 500));
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(CodeModel(
+                        "pushMushroom();",
+                        callback: () async {
+                          gameController.game.player.pushPushable();
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                        },
+                      ));
                     },
-                  ));
-                },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'pushMushroom()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text('pullLever()'),
-                onTap: () {
-                  codeController.addCode(CodeModel(
-                    "pullLever();",
-                    callback: () async {
-                      gameController.game.player.pullLever();
-                      await Future.delayed(const Duration(milliseconds: 500));
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(CodeModel(
+                        "pullLever();",
+                        callback: () async {
+                          gameController.game.player.pullLever();
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                        },
+                      ));
                     },
-                  ));
-                },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'pullLever()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text("if"),
-                onTap: () {
-                  codeController.addCode(IfCodeModel());
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(IfCodeModel());
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'if',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
               if (codeController.selectedCode.value is IfCodeModel &&
                   (codeController.selectedCode.value as IfCodeModel)
                       .elseCode
                       .isEmpty)
                 Column(
                   children: [
-                    ListTile(
-                      title: const Text("else"),
-                      onTap: () {
-                        (codeController.selectedCode.value as IfCodeModel)
-                            .addElseCode(PlaceHolderCodeModel());
-                        codeController.mainCode.refresh();
-                      },
+                    Column(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            (codeController.selectedCode.value as IfCodeModel)
+                                .addElseCode(PlaceHolderCodeModel());
+                            codeController.mainCode.refresh();
+                          },
+                          child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: EdgeInsets.all(10.0),
+                              child: Text(
+                                'else',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Divider(
+                          thickness: 1,
+                          height: 1,
+                        ),
+                      ],
                     ),
-                    const Divider(),
                   ],
                 ),
-              ListTile(
-                title: const Text("for"),
-                onTap: () {
-                  codeController.addCode(ForCodeModel(0));
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(ForCodeModel(0));
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'for',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text("while"),
-                onTap: () {
-                  codeController.addCode(WhileCodeModel());
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(WhileCodeModel());
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'while',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
               for (final code
                   in codeController.funcDefCode.whereType<FunctionCodeModel>())
                 Column(
                   children: [
-                    ListTile(
-                      title: Text('${code.name}()'),
-                      onTap: () {
-                        codeController.addCode(
-                          CodeModel(
-                            '${code.name}();',
-                            callback: () async {
-                              await codeController.runFunction(code);
-                            },
+                    Column(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            codeController.addCode(
+                              CodeModel(
+                                '${code.name}();',
+                                callback: () async {
+                                  await codeController.runFunction(code);
+                                },
+                              ),
+                            );
+                          },
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                '${code.name}()',
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
                           ),
-                        );
-                      },
+                        ),
+                        const Divider(
+                          thickness: 1,
+                          height: 1,
+                        ),
+                      ],
                     ),
-                    const Divider(),
                   ],
                 ),
             ],
@@ -417,7 +672,7 @@ class _CodePageState extends State<CodePage> with TickerProviderStateMixin {
         DecoratedBox(
             decoration: const BoxDecoration(color: Color(0xffF0F0F0)),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -430,7 +685,7 @@ class _CodePageState extends State<CodePage> with TickerProviderStateMixin {
                             },
                             icon: const Icon(Icons.arrow_back)),
                         const Text(
-                          "Select a Condition",
+                          'Select a Condition',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -439,102 +694,246 @@ class _CodePageState extends State<CodePage> with TickerProviderStateMixin {
                         onPressed: () {
                           codeController.removeRequest();
                         },
-                        icon: const Icon(Icons.delete))
+                        icon: const Icon(CupertinoIcons.delete))
                   ]),
             )),
         Flexible(
           child: ListView(
             children: [
-              ListTile(
-                title: const Text('isOnClam()'),
-                onTap: () {
-                  (codeController.selectedCode.value as HasCheck).check =
-                      () => gameController.game.player.isOnItem();
-                  codeController.setCondition('isOnClam()');
-                  codeController.clearSelectedCode();
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      (codeController.selectedCode.value as HasCheck).check =
+                          () => gameController.game.player.isOnItem();
+                      codeController.setCondition('isOnClam()');
+                      codeController.clearSelectedCode();
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'isOnClam()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text("hasClam()"),
-                onTap: () {
-                  (codeController.selectedCode.value as HasCheck).check =
-                      () => gameController.game.player.hasItem();
-                  codeController.setCondition('hasClam()');
-                  codeController.clearSelectedCode();
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      (codeController.selectedCode.value as HasCheck).check =
+                          () => gameController.game.player.hasItem();
+                      codeController.setCondition('hasClam()');
+                      codeController.clearSelectedCode();
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'hasClam()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text("isOnFlag()"),
-                onTap: () {
-                  (codeController.selectedCode.value as HasCheck).check =
-                      () => gameController.game.player.isOnDestination();
-                  codeController.setCondition('isOnDestination()');
-                  codeController.clearSelectedCode();
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      (codeController.selectedCode.value as HasCheck).check =
+                          () => gameController.game.player.isOnDestination();
+                      codeController.setCondition('isOnDestination()');
+                      codeController.clearSelectedCode();
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'isOnDestination()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text("isNotOnFlag()"),
-                onTap: () {
-                  (codeController.selectedCode.value as HasCheck).check =
-                      () => !gameController.game.player.isOnDestination();
-                  codeController.setCondition('isNotOnFlag()');
-                  codeController.clearSelectedCode();
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      (codeController.selectedCode.value as HasCheck).check =
+                          () => !gameController.game.player.isOnDestination();
+                      codeController.setCondition('isNotOnFlag()');
+                      codeController.clearSelectedCode();
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'isNotOnFlag()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text("frontIsWall()"),
-                onTap: () {
-                  (codeController.selectedCode.value as HasCheck).check =
-                      () => gameController.game.player.frontIsWall();
-                  codeController.setCondition('frontIsWall()');
-                  codeController.clearSelectedCode();
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      (codeController.selectedCode.value as HasCheck).check =
+                          () => gameController.game.player.frontIsWall();
+                      codeController.setCondition('frontIsWall()');
+                      codeController.clearSelectedCode();
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'frontIsWall()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text("frontIsNotWall()"),
-                onTap: () {
-                  (codeController.selectedCode.value as HasCheck).check =
-                      () => !gameController.game.player.frontIsWall();
-                  codeController.setCondition('frontIsNotWall()');
-                  codeController.clearSelectedCode();
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      (codeController.selectedCode.value as HasCheck).check =
+                          () => !gameController.game.player.frontIsWall();
+                      codeController.setCondition('frontIsNotWall()');
+                      codeController.clearSelectedCode();
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'frontIsNotWall()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text("frontIsThorns()"),
-                onTap: () {
-                  (codeController.selectedCode.value as HasCheck).check =
-                      () => gameController.game.player.frontIsObstacle();
-                  codeController.setCondition('frontIsThorns()');
-                  codeController.clearSelectedCode();
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      (codeController.selectedCode.value as HasCheck).check =
+                          () => gameController.game.player.frontIsObstacle();
+                      codeController.setCondition('frontIsThorns()');
+                      codeController.clearSelectedCode();
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'frontIsThorns()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text("frontIsMushroom()"),
-                onTap: () {
-                  (codeController.selectedCode.value as HasCheck).check =
-                      () => gameController.game.player.frontIsPushable();
-                  codeController.setCondition('frontIsMushroom()');
-                  codeController.clearSelectedCode();
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      (codeController.selectedCode.value as HasCheck).check =
+                          () => gameController.game.player.frontIsPushable();
+                      codeController.setCondition('frontIsMushroom()');
+                      codeController.clearSelectedCode();
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'frontIsMushroom()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
-              ListTile(
-                title: const Text("isOnLever()"),
-                onTap: () {
-                  (codeController.selectedCode.value as HasCheck).check =
-                      () => gameController.game.player.isOnLever();
-                  codeController.setCondition('isOnLever()');
-                  codeController.clearSelectedCode();
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      (codeController.selectedCode.value as HasCheck).check =
+                          () => gameController.game.player.isOnLever();
+                      codeController.setCondition('isOnLever()');
+                      codeController.clearSelectedCode();
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'isOnLever()',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
             ],
           ),
         )
@@ -546,35 +945,49 @@ class _CodePageState extends State<CodePage> with TickerProviderStateMixin {
     return Column(
       children: [
         DecoratedBox(
-          decoration: const BoxDecoration(color: Color(0xffF0F0F0)),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Select a Code",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        codeController.removeRequest();
-                      },
-                      icon: const Icon(Icons.delete))
-                ]),
-          ),
-        ),
+            decoration: const BoxDecoration(color: Color(0xffF0F0F0)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Select a command',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          codeController.removeRequest();
+                        },
+                        icon: const Icon(CupertinoIcons.delete))
+                  ]),
+            )),
         Flexible(
           child: ListView(
             children: [
-              ListTile(
-                title: const Text('Function'),
-                onTap: () {
-                  // print(eval('2+2'));
-                  codeController.addCode(FunctionCodeModel(''));
-                },
+              Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      codeController.addCode(FunctionCodeModel(''));
+                    },
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'Function',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1,
+                    height: 1,
+                  ),
+                ],
               ),
-              const Divider(),
             ],
           ),
         )
